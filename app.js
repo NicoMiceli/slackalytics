@@ -29,7 +29,7 @@ app.post('/collect', function(req, res){
 		cid: 	req.body.user_id,
 		ds:  	"slack", //data source
 		cd1: 	req.body.user_id,
-		cd2: 	req.body.channel_name
+		cd2: 	req.body.channel_name,
 		t: 		"event",
 		ec: 	"slack: "+ req.body.channel_name + " " + req.body.channel_id,
 		ea: 	"post by " + req.body.user_name + "|"+req.body.user_id,
