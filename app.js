@@ -4,15 +4,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var request = require('request');
 var qs = require('querystring');
-var channel = {
-	id: 	req.body.channel_id,
-	name: 	req.body.channel_name
-	}
-var user = {
-	id: 	req.body.user_id,
-	name: 	req.body.user_name
-}
-var msgText = req.body.text
+
 
 //Server Details
 var app = express();
@@ -29,8 +21,19 @@ app.get('/', function(req, res){
 	res.send('here');
 });
 
-app.post('/collect', function(req, res){	
+app.post('/collect', function(req, res){
 
+	var channel = {
+		id: 	req.body.channel_id,
+		name: 	req.body.channel_name
+	}
+	var user = {
+		id: 	req.body.user_id,
+		name: 	req.body.user_name
+	}
+	
+	var msgText = req.body.text
+	
 	//Structure Data
 	var data = {
 		v: 		1,
