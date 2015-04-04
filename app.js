@@ -32,23 +32,33 @@ app.post('/collect', function(req, res){
 		name: 	req.body.user_name
 	}
 	
-	var msgText = req.body.text
-	
+	var msgText = req.body.text;
+	var wordCount = msgText.split(/\s+\b/).length;
+	var emojiCount = msgText.match(/:[a-z_0-9]*:/g).length;
+	var exclaCount = msgText.match(/!/g).length;
+	var letterCount = msgText.match(/a-zA-Z/).length;
+
 	//Structure Data
 	var data = {
 		v: 		1,
 		tid: 	"UA-61435895-1",
-		cid: 	req.body.user_id,
+		cid: 	user.id,
 		ds:  	"slack", //data source
-		cd1: 	req.body.user_id,
-		cd2: 	req.body.channel_name,
+		cd1: 	user.id,
+		cd2: 	channel.name,
+		cd3: 	msgText,
+		cm1: 	wordCount,
+		cm2: 	emojiCount,
+		cm3: 	exclaCount,
+		cm4: 	letterCount,
 		t: 		"event",
-		ec: 	"slack: "+ req.body.channel_name + " " + req.body.channel_id,
+		ec: 	"slack: "+ channel.name + "|" + req.body.channel_id,
 		ea: 	"post by " + req.body.user_name + "|"+req.body.user_id,
 		el: 	msgText,
-		ev: 	300 	
-	}
-	console.log(req.body.channel_name+"|"+user.name+"|"+msgText)
+		ev: 	letterCount 	
+	};
+	console.log(JSON.stringify(data));
+	console.log(req.body);
 	//Make Post Request	
 	request.post("https://www.google-analytics.com/collect?"  + qs.stringify(data), 
 		function(error, resp, body){
