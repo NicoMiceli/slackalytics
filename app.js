@@ -33,10 +33,27 @@ app.post('/collect', function(req, res){
 	}
 	
 	var msgText = req.body.text;
-	//var wordCount = msgText.split(/\s+\b/).length;
-	//var emojiCount = msgText.match(/:[a-z_0-9]*:/g).length;
-	//var exclaCount = msgText.match(/!/g).length;
-	//var letterCount = msgText.match(/a-zA-Z/).length;
+
+	function searchM(regex){
+		var searchStr = msgText.match(regex);
+		if(searchStr != null){
+			return searchStr.length;
+		}
+		return 0;
+	};
+
+	function searchS(regex){
+		var searchStr = msgText.split(regex);
+		if(searchStr != null){
+			return searchStr.length;
+		}
+		return 0;
+	};
+
+	var wordCount = searchS(/\s+\b/);
+	var emojiCount = searchM(/:[a-z_0-9]*:/g);
+	var exclaCount = searchM(/!/g);
+	var letterCount = searchM(/a-zA-Z/);
 
 	//Structure Data
 	var data = {
@@ -47,10 +64,10 @@ app.post('/collect', function(req, res){
 		cd1: 	user.id,
 		cd2: 	channel.name,
 		cd3: 	msgText,
-	//	cm1: 	wordCount,
-	//	cm2: 	emojiCount,
-	//	cm3: 	exclaCount,
-	//	cm4: 	letterCount,
+		cm1: 	wordCount,
+		cm2: 	emojiCount,
+		cm3: 	exclaCount,
+		cm4: 	letterCount,
 		t: 		"event",
 		ec: 	"slack: "+ channel.name + "|" + req.body.channel_id,
 		ea: 	"post by " + req.body.user_name + "|"+req.body.user_id,
@@ -65,7 +82,9 @@ app.post('/collect', function(req, res){
 		console.log(error);
 	})
 });
-
+function textSearch (str,regex) {
+	return str.match(regex).length
+}
 
 //Start Server
 app.listen(port, function () {
