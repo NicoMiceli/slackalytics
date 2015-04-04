@@ -24,14 +24,18 @@ app.post('/collect', function(req, res){
 
 //Structure Data
 	var data = {
-		v:1,
-		tid:"UA-61435895-1",
-		cid:555 ,
-		t:"event",
-		ec:"slack channel "+ req.body.channel_name,
-		ea:"post by " + req.body.user_name,
-		el:req.body.text,        //the text of the message
-		ev:300 	}
+		v: 		1,
+		tid: 	"UA-61435895-1",
+		cid: 	req.body.user_id,
+		ds:  	"slack", //data source
+		cd1: 	req.body.user_id,
+		cd2: 	req.body.channel_name
+		t: 		"event",
+		ec: 	"slack: "+ req.body.channel_name + " " + req.body.channel_id,
+		ea: 	"post by " + req.body.user_name + "|"+req.body.user_id,
+		el: 	req.body.text,
+		ev: 	300 	
+	}
 
 //Make Post Request	
 	request.post("https://www.google-analytics.com/collect?"  + qs.stringify(data), 
