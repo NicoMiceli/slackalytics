@@ -33,10 +33,10 @@ app.post('/collect', function(req, res){
 	}
 	
 	var msgText = req.body.text;
-	var wordCount = msgText.split(/\s+\b/).length;
-	var emojiCount = msgText.match(/:[a-z_0-9]*:/g).length;
-	var exclaCount = msgText.match(/!/g).length;
-	var letterCount = msgText.match(/a-zA-Z/).length;
+	//var wordCount = msgText.split(/\s+\b/).length;
+	//var emojiCount = msgText.match(/:[a-z_0-9]*:/g).length;
+	//var exclaCount = msgText.match(/!/g).length;
+	//var letterCount = msgText.match(/a-zA-Z/).length;
 
 	//Structure Data
 	var data = {
@@ -47,15 +47,15 @@ app.post('/collect', function(req, res){
 		cd1: 	user.id,
 		cd2: 	channel.name,
 		cd3: 	msgText,
-		cm1: 	wordCount,
-		cm2: 	emojiCount,
-		cm3: 	exclaCount,
-		cm4: 	letterCount,
+	//	cm1: 	wordCount,
+	//	cm2: 	emojiCount,
+	//	cm3: 	exclaCount,
+	//	cm4: 	letterCount,
 		t: 		"event",
 		ec: 	"slack: "+ channel.name + "|" + req.body.channel_id,
 		ea: 	"post by " + req.body.user_name + "|"+req.body.user_id,
 		el: 	msgText,
-		ev: 	letterCount 	
+		ev: 	1 	
 	};
 	console.log(JSON.stringify(data));
 	console.log(req.body);
