@@ -53,7 +53,7 @@ app.post('/collect', function(req, res){
 	var wordCount = searchS(/\s+\b/);
 	var emojiCount = searchM(/:[a-z_0-9]*:/g);
 	var exclaCount = searchM(/!/g);
-	var letterCount = searchM(/a-zA-Z/);
+	var letterCount = searchM(/a-zA-Z/g);
 	console.log(msgText.length)
 
 	//Structure Data
