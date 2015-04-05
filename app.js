@@ -44,7 +44,7 @@ app.post('/collect', function(req, res){
 
 	function searchS(regex){
 		var searchStr = msgText.split(regex);
-		if(searchStr != null){
+		if(searchStr != undefined){
 			return searchStr.length;
 		}
 		return 0;
