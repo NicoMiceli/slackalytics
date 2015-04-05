@@ -54,6 +54,7 @@ app.post('/collect', function(req, res){
 	var emojiCount = searchM(/:[a-z_0-9]*:/g);
 	var exclaCount = searchM(/!/g);
 	var letterCount = searchM(/a-zA-Z/);
+	console.log(msgText.length)
 
 	//Structure Data
 	var data = {
