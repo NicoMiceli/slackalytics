@@ -69,7 +69,7 @@ app.post('/collect', function(req, res){
 		cm1: 	wordCount,
 		cm2: 	emojiCount,
 		cm3: 	exclaCount,
-		cm4: 	letterCount,
+	//	cm4: 	letterCount,
 		t: 		"event",
 		ec: 	"slack: "+ channel.name + "|" + req.body.channel_id,
 		ea: 	"post by " + req.body.user_name + "|"+req.body.user_id,
