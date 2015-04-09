@@ -50,9 +50,12 @@ app.post('/collect', function(req, res){
 		return 0;
 	};
 
+	// track the use of '...'
+
 	var wordCount = searchS(/\s+\b/);
 	var emojiCount = searchM(/:[a-z_0-9]*:/g);
 	var exclaCount = searchM(/!/g);
+	var elipseCount = searchM(/\.\.\./g)
 	//still in the works
 	//var letterCount = msgText.length
 	//console.log(msgText.length)
@@ -70,6 +73,7 @@ app.post('/collect', function(req, res){
 		cm2: 	emojiCount,
 		cm3: 	exclaCount,
 	//	cm4: 	letterCount,
+		cm5: 	elipseCount, 
 		t: 		"event",
 		ec: 	"slack: "+ channel.name + "|" + req.body.channel_id,
 		ea: 	"post by " + req.body.user_name + "|"+req.body.user_id,
