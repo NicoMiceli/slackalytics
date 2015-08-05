@@ -1,4 +1,3 @@
-
 //Set up Reqs
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -50,8 +49,6 @@ app.post('/collect', function(req, res){
 		return 0;
 	};
 
-	// track the use of '...'
-
 	var wordCount = searchS(/\s+\b/);
 	var emojiCount = searchM(/:[a-z_0-9]*:/g);
 	var exclaCount = searchM(/!/g);
@@ -74,9 +71,10 @@ app.post('/collect', function(req, res){
 		cm3: 	exclaCount,
 	//	cm4: 	letterCount,
 		cm5: 	elipseCount, 
+	//	cm6: 	questionMark, //need to set up in GA
 		t: 		"event",
 		ec: 	"slack: "+ channel.name + "|" + req.body.channel_id,
-		ea: 	"post by " + req.body.user_name + "|"+req.body.user_id,
+		ea: 	"post by " + "|"+req.body.user_id,
 		el: 	msgText,
 		ev: 	1 	
 	};
