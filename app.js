@@ -11,8 +11,8 @@ var port = process.env.PORT || 3000;
 
 //Set Body Parser
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json()); 
-app.use(bodyParser.json({ type: 'application/vnd.api+json' })); 
+app.use(bodyParser.json());
+app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 
 
 //Routes
@@ -25,11 +25,10 @@ app.post('/collect', function(req, res){
 	var channel = {
 		id: 	req.body.channel_id,
 		name: 	req.body.channel_name
-	}
+	};
 	var user = {
-		id: 	req.body.user_id,
-		name: 	req.body.user_name
-	}
+		id: 	req.body.user_id
+	};
 	
 	var msgText = req.body.text;
 
@@ -52,6 +51,7 @@ app.post('/collect', function(req, res){
 	var wordCount = searchS(/\s+\b/);
 	var emojiCount = searchM(/:[a-z_0-9]*:/g);
 	var exclaCount = searchM(/!/g);
+	var questionMark = searchM(/\?/g);
 	var elipseCount = searchM(/\.\.\./g)
 	//still in the works
 	//var letterCount = msgText.length
@@ -71,7 +71,7 @@ app.post('/collect', function(req, res){
 		cm3: 	exclaCount,
 	//	cm4: 	letterCount,
 		cm5: 	elipseCount, 
-	//	cm6: 	questionMark, //need to set up in GA
+		cm6: 	questionMark, //need to set up in GA
 		t: 		"event",
 		ec: 	"slack: "+ channel.name + "|" + req.body.channel_id,
 		ea: 	"post by " + "|"+req.body.user_id,
@@ -81,7 +81,7 @@ app.post('/collect', function(req, res){
 	console.log(JSON.stringify(data));
 	console.log(req.body);
 	//Make Post Request	
-	request.post("https://www.google-analytics.com/collect?"  + qs.stringify(data), 
+	request.post("https://www.google-analytics.com/collect?" + qs.stringify(data), 
 		function(error, resp, body){
 		console.log(error);
 	})
@@ -92,5 +92,5 @@ function textSearch (str,regex) {
 
 //Start Server
 app.listen(port, function () {
-  console.log('Listening on port ' + port); 
+	console.log('Listening on port ' + port); 
 });
