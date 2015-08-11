@@ -52,7 +52,7 @@ app.post('/collect', function(req, res){
 	var emojiCount = searchM(/:[a-z_0-9]*:/g);
 	var exclaCount = searchM(/!/g);
 	var questionMark = searchM(/\?/g);
-	var elipseCount = searchM(/\.\.\./g)
+	var elipseCount = searchM(/\.\.\./g);
 	//still in the works
 	//var letterCount = msgText.length
 	//console.log(msgText.length)
