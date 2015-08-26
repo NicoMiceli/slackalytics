@@ -63,6 +63,7 @@ app.post('/collect', function(req, res){
 		tid: 	"UA-61435895-1",
 		cid: 	user.id,
 		ds:  	"slack", //data source
+		cs: 	"slack", // campaign source
 		cd1: 	user.id,
 		cd2: 	channel.name,
 		cd3: 	msgText,
@@ -76,7 +77,7 @@ app.post('/collect', function(req, res){
 		ec: 	"slack: "+ channel.name + "|" + req.body.channel_id,
 		ea: 	"post by " + "|"+req.body.user_id,
 		el: 	msgText,
-		ev: 	1 	
+		ev: 	1 
 	};
 	console.log(JSON.stringify(data));
 	console.log(req.body);
