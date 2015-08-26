@@ -75,7 +75,7 @@ app.post('/collect', function(req, res){
 		cm6: 	questionMark, //need to set up in GA
 		t: 		"event",
 		ec: 	"slack: "+ channel.name + "|" + req.body.channel_id,
-		ea: 	"post by " + "|"+req.body.user_id,
+		ea: 	"post by " +req.body.user_id,
 		el: 	msgText,
 		ev: 	1 
 	};
