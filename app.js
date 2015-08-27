@@ -22,6 +22,7 @@ app.get('/', function(req, res){
 
 app.post('/collect', function(req, res){
 
+
 	var channel = {
 		id: 	req.body.channel_id,
 		name: 	req.body.channel_name
@@ -74,8 +75,8 @@ app.post('/collect', function(req, res){
 		cm5: 	elipseCount, 
 		cm6: 	questionMark, //need to set up in GA
 		t: 		"event",
-		ec: 	"slack: "+ channel.name + "|" + req.body.channel_id,
-		ea: 	"post by " +req.body.user_id,
+		ec: 	"slack: "+ channel.name + "|" + channel.id,
+		ea: 	"post by " + user.id,
 		el: 	msgText,
 		ev: 	1 
 	};
