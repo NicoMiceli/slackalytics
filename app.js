@@ -54,14 +54,12 @@ app.post('/collect', function(req, res){
 	var exclaCount = searchM(/!/g);
 	var questionMark = searchM(/\?/g);
 	var elipseCount = searchM(/\.\.\./g);
-	//still in the works
-	//var letterCount = msgText.length
-	//console.log(msgText.length)
+
 
 	//Structure Data
 	var data = {
 		v: 		1,
-		tid: 	"UA-61435895-1",
+		tid: 	"UA-XXXXXXXX-1",
 		cid: 	user.id,
 		ds:  	"slack", //data source
 		cs: 	"slack", // campaign source
@@ -74,7 +72,7 @@ app.post('/collect', function(req, res){
 	//	cm4: 	letterCount,
 		cm5: 	elipseCount, 
 		cm6: 	questionMark, //need to set up in GA
-		t: 		"event",
+		t: 	"event",
 		ec: 	"slack: "+ channel.name + "|" + channel.id,
 		ea: 	"post by " + user.id,
 		el: 	msgText,
@@ -88,9 +86,6 @@ app.post('/collect', function(req, res){
 		console.log(error);
 	})
 });
-function textSearch (str,regex) {
-	return str.match(regex).length
-}
 
 //Start Server
 app.listen(port, function () {
