@@ -246,8 +246,11 @@ app.post('/collect', function(req, res){
 		};
 
 		// Post Data
+		// session start
 		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLstartData), function(error, resp, body){console.log(error);});
+		// event
 		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLeventData), function(error, resp, body){console.log(error);});
+		// session close
 		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLcloseData), function(error, resp, body){console.log(error);});
 	} else {
 		console.log("Localytics application key not defined as environment variable");
@@ -306,7 +309,9 @@ app.post('/collect', function(req, res){
 			console.log("Google Analytics Data: "+JSON.stringify(GAdata));
 		}
 		if (env_var.localytics_key) {
-			console.log("Localytics Data: "+JSON.stringify(LCLdata));
+			console.log("Localytics Session Start Data: "+JSON.stringify(LCLstartData));
+			console.log("Localytics Event Data: "+JSON.stringify(LCLeventData));
+			console.log("Localytics Session Close Data: "+JSON.stringify(LCLcloseData));
 		}
 		if (env_var.mixpanel_token) {
 			console.log("Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
@@ -321,8 +326,12 @@ app.post('/collect', function(req, res){
 			console.log("Google Analytics Tracking Post Output: https://www.google-analytics.com/collect?" + qs.stringify(GAdata));
 		}
 		if (env_var.localytics_key) {
-			console.log("Localytics Data: "+JSON.stringify(GAdata));
-			console.log("Localytics Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLdata));
+			console.log("Localytics Session Start Data: "+JSON.stringify(LCLstartData));
+			console.log("Localytics Event Data: "+JSON.stringify(LCLeventData));
+			console.log("Localytics Session Close Data: "+JSON.stringify(LCLcloseData));
+			console.log("Localytics Session Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLstartData));
+			console.log("Localytics Event Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLeventData));
+			console.log("Localytics Session Close Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLcloseData));
 		}
 		if (env_var.mixpanel_token) {
 			console.log("Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
