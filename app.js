@@ -1,7 +1,7 @@
 //Set up Env Vars
 var env_var = {
-	environment: process.env.NODE_ENV, // supports: production and development
-	log_level: process.env.LOGLEVEL,  // supports: info and debug
+	environment: process.env.NODE_ENV || 'development';, // supports: production and development
+	log_level: process.env.LOGLEVEL,  // supports: debug, error, warn, info, off
 	write_mongo: process.env.MONGO_ENABLED, // true / false
 	analytics_track: process.env.ANALYTICS_ENABLED, // true / false
 			mongo_user: process.env.MONGO_USER_PROD,
@@ -14,8 +14,6 @@ var env_var = {
 			mixpanel_token: process.env.MIXPANEL_PROD
 };
 
-var logging = {};
-logging["level"] = log_level;
 		
 //Set up Reqs
 var express = require('express');
@@ -30,6 +28,20 @@ var mongodb = require('mongodb');
 //Server Details
 var app = express();
 var port = process.env.PORT || 3000;
+
+//Logger
+var logger = exports;
+logger.debugLevel = env_var.log_level || 'warn';
+logger.log = function(level, message) {
+	var levels = ['debug', 'error', 'warn', 'info', 'off'];
+	if (levels.indexOf(level) >= levels.indexOf(logger.debugLevel) ) {
+		if (typeof message !== 'string') {
+			message = JSON.stringify(message);
+		};
+		console.log(level+': '+message);
+		}
+}
+
 
 //Set Body Parser
 app.use(bodyParser.urlencoded({extended: true}));
@@ -103,26 +115,22 @@ app.post('/collect', function(req, res){
 	
 	mongodb.MongoClient.connect(url, function (err, db) {
 		if (err) {
-			console.log('Mongo Error: Unable to connect to the server. Error:', err);
+			logger.log('error', 'Mongo Error: Unable to connect to the server. Error: ' + err);
 		} else {
-			if (logging["level"].toLowerCase() === "debug") {
-				console.log('Mongo: Connection established to', url);
-			}
+			logger.log('debug','Mongo: Connection established to '+url);
     		var collection = db.collection(collection_name);
 
 			// Insert post contents
 			collection.insert(req.body, function (err, result) {
 				if (err) {
-					console.log('Mongo Error: '+err);
+					logger.log('error', 'Mongo Error: '+err);
 				} else {
-					if (logging["level"].toLowerCase() === "info" || logging["level"].toLowerCase() === "debug") {
-						console.log('Mongo: Inserted documents into the '+collection_name+' collection. The documents inserted with "_id" are:', result.length, result);
-					}
+					logger.log('debug', 'Mongo: '+result.length+' inserted documents into the '+collection_name+' collection. The documents inserted with "_id" are: '+result);
 				}
 			//Close connection
 			db.close(function (err) {
 				if (err) {
-					console.log('Mongo Error: '+err);
+					logger.log('error','Mongo Error: '+err);
 					}
 			});
 			});
@@ -130,7 +138,6 @@ app.post('/collect', function(req, res){
 		}
 	);
 	}
-
 
 	if (env_var.analytics_track === true) {
 	// GOOGLE ANALYTICS COLLECT AND POST
@@ -161,32 +168,25 @@ app.post('/collect', function(req, res){
 		};
 
 		var google_url = {
-			if (logging["level"].toLowerCase() === "debug") {
+//			if (logging["level"].toLowerCase() === "debug") {
 				track: "https://www.google-analytics.com/collect?"
-			} else {
-				track: "https://www.google-analytics.com/collect?"
-			}
+//			} else {
+//				track: "https://www.google-analytics.com/collect?"
+//			}
 		}
 
-		if (logging["level"].toLowerCase() === "info" || logging["level"].toLowerCase() === "debug") {
-			console.log("Google Analytics Data: "+JSON.stringify(GAdata));
-		}
-
-		if (logging["level"].toLowerCase() === "debug") {
-			console.log("Google Analytics Tracking Post Output: "google_url.track + qs.stringify(GAdata));
-		}
+		logger.log('debug', "Google Analytics Data: "+JSON.stringify(GAdata));
+		logger.log('debug', "Google Analytics Tracking Post Output: "google_url.track + qs.stringify(GAdata));
 
 		// Post Data
 		request.post(google_url.track + qs.stringify(GAdata), function(error, resp, body) {
-			if(error || logging["level"].toLowerCase() === "debug") {
-				console.log('Google Analytics Tracking Response Debug: '+resp);
 				if(error) {
-					console.log('Google Analytics Error: '+error);
+					logger.log('error', 'Google Analytics Error: '+error);
 				}
-			}
+				logger.log('debug', 'Google Analytics Tracking Response Debug: '+resp);
 		});
 	} else {
-		console.log("Google Analytics account ID not defined as environment variable");
+		logger.log('info',"Google Analytics account ID not defined as environment variable");
 	}
 
 
@@ -309,55 +309,44 @@ app.post('/collect', function(req, res){
 		};
 
 		var localytics_url = {
-			if (logging["level"].toLowerCase() === "debug") {
+//			if (logging["level"].toLowerCase() === "debug") {
+//				track: "https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data="
+//			} else {
 				track: "https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data="
-			} else {
-				track: "https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data="
-			}
+//			}
 		}
 
-		if (logging["level"].toLowerCase() === "info" || logging["level"].toLowerCase() === "debug") {
-			console.log("Localytics Session Start Data: \n Head: "+JSON.stringify(LCLstartHeadData)+"\n Body: "+JSON.stringify(LCLstartBodyData));
-			console.log("Localytics Event Data: \n Head: "+JSON.stringify(LCLeventHeadData)+"\n Body: "+JSON.stringify(LCLeventBodyData));
-			console.log("Localytics Session Close Data: \n Head: "+JSON.stringify(LCLcloseHeadData)+"\n Body: "+JSON.stringify(LCLcloseBodyData));
-		}
-
-		if (logging["level"].toLowerCase() === "debug") {
-			console.log("Localytics Session Start Tracking Post Output: "localytics_url.track + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)));
-			console.log("Localytics Event Tracking Post Output: "localytics_url.track + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)));
-			console.log("Localytics Session Close Start Tracking Post Output: "localytics_url.track + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)));
-		}
+		logger.log('info', "Localytics Session Start Data: \n Head: "+JSON.stringify(LCLstartHeadData)+"\n Body: "+JSON.stringify(LCLstartBodyData));
+		logger.log('info', "Localytics Event Data: \n Head: "+JSON.stringify(LCLeventHeadData)+"\n Body: "+JSON.stringify(LCLeventBodyData));
+		logger.log('info', "Localytics Session Close Data: \n Head: "+JSON.stringify(LCLcloseHeadData)+"\n Body: "+JSON.stringify(LCLcloseBodyData));
+		logger.log('debug', "Localytics Session Start Tracking Post Output: "localytics_url.track + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)));
+		logger.log('debug', "Localytics Event Tracking Post Output: "localytics_url.track + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)));
+		logger.log('debug', "Localytics Session Close Start Tracking Post Output: "localytics_url.track + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)));
 
 		// Post Data
 		// Session Start
 		request.post(localytics_url.track + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)), function(error, resp, body) {
-			if(error || logging["level"].toLowerCase() === "debug") {
-				console.log('Localytics Tracking Start Response Debug: '+resp);
+				logger.log('debug','Localytics Tracking Start Response Debug: '+resp);
 				if(error) {
-					console.log('Localytics Error: '+error);
+					logger.log('error', 'Localytics Error: '+error);
 				}
-			}
 		});
 		// Event
 		request.post(localytics_url.track + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)), function(error, resp, body) {
-			if(error || logging["level"].toLowerCase() === "debug") {
-				console.log('Localytics Tracking Event Response Debug: '+resp);
+				logger.log('debug','Localytics Tracking Event Response Debug: '+resp);
 				if(error) {
-					console.log('Localytics Error: '+error);
+					logger.log('error', 'Localytics Error: '+error);
 				}
-			}
 		});
 		// Session Close
 		request.post(localytics_url.track + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)), function(error, resp, body) {
-			if(error || logging["level"].toLowerCase() === "debug") {
-				console.log('Localytics Tracking Close Response Debug: '+resp);
+				logger.log('debug','Localytics Tracking Close Response Debug: '+resp);
 				if(error) {
-					console.log('Localytics Error: '+error);
+					logger.log('error', 'Localytics Error: '+error);
 				}
-			}
 		});
 	} else {
-		console.log("Localytics application key not defined as environment variable");
+		logger.log('info', "Localytics application key not defined as environment variable");
 	}
 
 
@@ -407,64 +396,51 @@ app.post('/collect', function(req, res){
 
 
 		var mixpanel_url = {
-			if (logging["level"].toLowerCase() === "debug") {
-				track: "https://api.mixpanel.com/track/?verbose=1&ip=0&data=",
-				engage: "https://api.mixpanel.com/engage/?verbose=1&ip=0&data="
-			} else {
+//			if (logging["level"].toLowerCase() === "debug") {
+//				track: "https://api.mixpanel.com/track/?verbose=1&ip=0&data=",
+//				engage: "https://api.mixpanel.com/engage/?verbose=1&ip=0&data="
+//			} else {
 				track: "https://api.mixpanel.com/track/?ip=0&data=",
 				engage: "https://api.mixpanel.com/engage/?ip=0&data="			
-			}
+//			}
 		}
 
-		if (logging["level"].toLowerCase() === "info" || logging["level"].toLowerCase() === "debug") {
-			console.log("Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
-			console.log("Mixpanel Add Engage Data: "+JSON.stringify(mixAddEngage));
-			console.log("Mixpanel Set Engage Data: "+JSON.stringify(mixSetEngage));
-		}
-
-		if (logging["level"].toLowerCase() === "debug") {
-			console.log("Mixpanel Tracking Post Output: "mixpanel_url.track + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))));
-			console.log("Mixpanel Add Engage Post Output: "mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixAddEngage))));
-			console.log("Mixpanel Set Engage Post Output: "mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixSetEngage))));
-		}
+		logger.log('info', "Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
+		logger.log('info', "Mixpanel Add Engage Data: "+JSON.stringify(mixAddEngage));
+		logger.log('info', "Mixpanel Set Engage Data: "+JSON.stringify(mixSetEngage));
+		logger.log('debug', "Mixpanel Tracking Post Output: "mixpanel_url.track + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))));
+		logger.log('debug', "Mixpanel Add Engage Post Output: "mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixAddEngage))));
+		logger.log('debug', "Mixpanel Set Engage Post Output: "mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixSetEngage))));
 
 		// Post Data
 		request.post(mixpanel_url.track + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))), function(error, resp, body) {
-			if(error || logging["level"].toLowerCase() === "debug") {
-				console.log('Mixpanel Tracking Response Debug: '+resp);
+				logger.log('debug', 'Mixpanel Tracking Response Debug: '+resp);
 				if(error) {
-					console.log('Mixpanel Error: '+error);
+					logger.log('error','Mixpanel Error: '+error);
 				}
-			}
 		});
 		request.post(mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixAddEngage))), function(error, resp, body) {
-			if(error || logging["level"].toLowerCase() === "debug") {
-				console.log('Mixpanel Engage Response Debug: '+resp);
+				logger.log('debug', 'Mixpanel Engage Response Debug: '+resp);
 				if(error) {
-					console.log('Mixpanel Error: '+error);
+					logger.log('error', 'Mixpanel Error: '+error);
 				}
-			}
 		});
 		request.post(mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixSetEngage))), function(error, resp, body) {
-			if(error || logging["level"].toLowerCase() === "debug") {
-				console.log('Mixpanel Engage Response Debug: '+resp);
+				logger.log('debug', 'Mixpanel Engage Response Debug: '+resp);
 				if(error) {
-					console.log('Mixpanel Error: '+error);
+					logger.log('error', 'Mixpanel Error: '+error);
 				}
-			}
 		});
 	} else {
-		console.log("Mixpanel token not defined as environment variable");
+		logger.log('info', "Mixpanel token not defined as environment variable");
 	}
 	}
 
 // DEBUG LOGGING
-	if (logging["level"].toLowerCase() === "info" || logging["level"].toLowerCase() === "debug") {
-		console.log("Raw Slack Webhook Post: "+JSON.stringify(req.body));
-	}
+	logger.log('info', "Raw Slack Webhook Post: "+JSON.stringify(req.body));
 });
 
 //Start Server
 app.listen(port, function () {
-	console.log('Listening on port ' + port); 
+	logger.log('info', 'Listening on port ' + port); 
 });
