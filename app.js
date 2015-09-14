@@ -128,7 +128,7 @@ app.post('/collect', function(req, res){
 		};
 	
 		var LCLstartData = {
-			e: 1,
+			{e: 1,
 			client_date: msgTime,
 			callback: "z",
 			data: {
@@ -159,11 +159,11 @@ app.post('/collect', function(req, res){
 				ms: null,
 				cid: user.id,
 				utp: "known"
-				}
+				}}
 		};
 
 		var LCLeventData = {
-			e: 1,
+			{e: 1,
 			client_date: msgTime,
 			callback: z,
 			data: {
@@ -205,12 +205,12 @@ app.post('/collect', function(req, res){
 					question_marks: questionMark,
 					domain: teamDomain+".slack.com"
 				}
-			}
+			}}
 		};
 
 
 		var LCLcloseData = {
-			e: 1,
+			{e: 1,
 			client_date: msgTime,
 			callback: "z",
 			data: {
@@ -242,7 +242,7 @@ app.post('/collect', function(req, res){
 				fl:[],
 				cid: user.id,
 				utp: "known"
-			}
+			}}
 		};
 
 		// Post Data
