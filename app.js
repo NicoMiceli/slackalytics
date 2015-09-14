@@ -4,34 +4,14 @@ var env_var = {
 	log_level: process.env.LOGLEVEL,  // supports: info and debug
 	write_mongo: process.env.MONGO_ENABLED, // true / false
 	analytics_track: process.env.ANALYTICS_ENABLED, // true / false
-
-/*	if (env_var.environment.toLowerCase() === "production") { */
-		if (env_var.write_mongo === true) {
 			mongo_user: process.env.MONGO_USER_PROD,
 			mongo_password: process.env.MONGO_PASSWORD_PROD,
 			mongo_server: process.env.MONGO_SERVER_PROD,
 			mongo_port: process.env.MONGO_PORT_PROD,
 			mongo_db: process.env.MONGO_DB_PROD,
-		}
-		if (env_var.analytics_track === true) {
 			ga_key: process.env.GOOGLE_ANALYTICS_PROD,
 			localytics_key: process.env.LOCALYTICS_PROD,
-			mixpanel_token: process.env.MIXPANEL_PROD,
-		}
-/*	} else {	
-		if (env_var.write_mongo === true) {
-			mongo_user: process.env.MONGO_USER_DEV,
-			mongo_password: process.env.MONGO_PASSWORD_DEV,
-			mongo_server: process.env.MONGO_SERVER_DEV,
-			mongo_port: process.env.MONGO_PORT_DEV,
-			mongo_db: process.env.MONGO_DB_DEV,
-		}
-		if (env_var.analytics_track === true) {
-			ga_key: process.env.GOOGLE_ANALYTICS_DEV,
-			localytics_key: process.env.LOCALYTICS_DEV,
-			mixpanel_token: process.env.MIXPANEL_DEV,
-		}
-	} */
+			mixpanel_token: process.env.MIXPANEL_PROD
 };
 
 
