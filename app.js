@@ -1,6 +1,6 @@
 //Set up Env Vars
 var env_var = {
-	environment = process.env.ENVIRONMENT,
+	environment: process.env.ENVIRONMENT,
 	debug: process.env.DEBUG,  // supports: info and debug
 	mongo_user: process.env.MONGO_USER_PROD,
 	mongo_password: process.env.MONGO_PASSWORD_PROD,
@@ -9,7 +9,7 @@ var env_var = {
 	mongo_db: process.env.MONGO_DB_PROD,
 	ga_key: process.env.GOOGLE_ANALYTICS_PROD,
 	localytics_key: process.env.LOCALYTICS_PROD,
-	mixpanel_token: process.env.MIXPANEL_PROD,
+	mixpanel_token: process.env.MIXPANEL_PROD
 };
 
 
