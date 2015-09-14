@@ -37,10 +37,10 @@ logger.log = function(level, message) {
 	if (levels.indexOf(level) >= levels.indexOf(logger.debugLevel) ) {
 		if (typeof message !== 'string') {
 			message = JSON.stringify(message);
-		};
+		}
 		console.log(level+': '+message);
 		}
-}
+};
 
 
 //Set Body Parser
@@ -167,10 +167,16 @@ app.post('/collect', function(req, res){
 			ev: 	1 
 		};
 
-		var google_url_track = "https://www.google-analytics.com/collect?";
+		var google_url = {
+//			if (logging["level"].toLowerCase() === "debug") {
+				track: "https://www.google-analytics.com/collect?"
+//			} else {
+//				track: "https://www.google-analytics.com/collect?"
+//			}
+		};
 
-		logger.log('debug', 'Google Analytics Data: '+JSON.stringify(GAdata));
-		logger.log('debug', 'Google Analytics Tracking Post Output: 'google_url.track + qs.stringify(GAdata));
+		logger.log('debug', "Google Analytics Data: "+JSON.stringify(GAdata));
+		logger.log('debug', "Google Analytics Tracking Post Output: "+google_url.track + qs.stringify(GAdata));
 
 		// Post Data
 		request.post(google_url.track + qs.stringify(GAdata), function(error, resp, body) {
@@ -188,7 +194,7 @@ app.post('/collect', function(req, res){
 	if (env_var.localytics_key) {
 		var lcl_sd_values = {
 			device_id:	uuid.v4(),
-			session_id:	uuid.v4(),
+			session_id:	uuid.v4()
 		};
 
 		// Localytics Session Start
@@ -308,14 +314,14 @@ app.post('/collect', function(req, res){
 //			} else {
 				track: "https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data="
 //			}
-		}
+		};
 
 		logger.log('info', "Localytics Session Start Data: \n Head: "+JSON.stringify(LCLstartHeadData)+"\n Body: "+JSON.stringify(LCLstartBodyData));
 		logger.log('info', "Localytics Event Data: \n Head: "+JSON.stringify(LCLeventHeadData)+"\n Body: "+JSON.stringify(LCLeventBodyData));
 		logger.log('info', "Localytics Session Close Data: \n Head: "+JSON.stringify(LCLcloseHeadData)+"\n Body: "+JSON.stringify(LCLcloseBodyData));
-		logger.log('debug', "Localytics Session Start Tracking Post Output: "localytics_url.track + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)));
-		logger.log('debug', "Localytics Event Tracking Post Output: "localytics_url.track + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)));
-		logger.log('debug', "Localytics Session Close Start Tracking Post Output: "localytics_url.track + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)));
+		logger.log('debug', "Localytics Session Start Tracking Post Output: "+localytics_url.track + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)));
+		logger.log('debug', "Localytics Event Tracking Post Output: "+localytics_url.track + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)));
+		logger.log('debug', "Localytics Session Close Start Tracking Post Output: "+localytics_url.track + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)));
 
 		// Post Data
 		// Session Start
@@ -397,14 +403,14 @@ app.post('/collect', function(req, res){
 				track: "https://api.mixpanel.com/track/?ip=0&data=",
 				engage: "https://api.mixpanel.com/engage/?ip=0&data="			
 //			}
-		}
+		};
 
 		logger.log('info', "Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
 		logger.log('info', "Mixpanel Add Engage Data: "+JSON.stringify(mixAddEngage));
 		logger.log('info', "Mixpanel Set Engage Data: "+JSON.stringify(mixSetEngage));
-		logger.log('debug', "Mixpanel Tracking Post Output: "mixpanel_url.track + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))));
-		logger.log('debug', "Mixpanel Add Engage Post Output: "mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixAddEngage))));
-		logger.log('debug', "Mixpanel Set Engage Post Output: "mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixSetEngage))));
+		logger.log('debug', "Mixpanel Tracking Post Output: "+mixpanel_url.track + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))));
+		logger.log('debug', "Mixpanel Add Engage Post Output: "+mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixAddEngage))));
+		logger.log('debug', "Mixpanel Set Engage Post Output: "+mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixSetEngage))));
 
 		// Post Data
 		request.post(mixpanel_url.track + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))), function(error, resp, body) {
