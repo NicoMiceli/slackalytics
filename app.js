@@ -3,7 +3,7 @@ var env_var = {
 	environment: process.env.NODE_ENV, // supports: production and development
 	log_level: process.env.LOGLEVEL,  // supports: info and debug
 	write_mongo: process.env.MONGO_ENABLED, // true / false
-	analytics_track: process.env.ANALYTICS_ENABLED, // true / false
+	analytics_track: process.env.ANALYTICS_ENABLED // true / false
 
 	if (env_var.environment.toLowerCase() === "production") {
 		if (env_var.write_mongo === true) {
