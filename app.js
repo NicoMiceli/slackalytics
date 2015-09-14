@@ -34,7 +34,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 
 //MongoDB Setup
-var MongoClient = mongodb.MongoClient;
 var url = "mongodb://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_server+":"+env_var.mongo_port+"/"+env_var.mongo_db;
 
 //Simple Base64 handler
@@ -99,22 +98,30 @@ app.post('/collect', function(req, res){
 
 
 	if (env_var.log_to_mongo) {
-	MongoClient.connect(url, function (err, db) {
+	mongodb.MongoClient.connect(url, function (err, db) {
 		if (err) {
-			console.log('Unable to connect to the mongoDB server. Error:', err);
+			console.log('Mongo Error: Unable to connect to the server. Error:', err);
 		} else {
-			console.log('Connection established to', url);
+			if (env_var.debug.toLowerCase() === "debug") {
+				console.log('Mongo: Connection established to', url);
+			}
     		var collection = db.collection('posts');
 
 			// Insert post contents
 			collection.insert(req.body, function (err, result) {
 				if (err) {
-					console.log(err);
+					console.log('Mongo Error: '+err);
 				} else {
-					console.log('Inserted %d documents into the "posts" collection. The documents inserted with "_id" are:', result.length, result);
+					if (env_var.debug.toLowerCase() === "info" || env_var.debug.toLowerCase() === "debug") {
+						console.log('Mongo: Inserted %d documents into the "posts" collection. The documents inserted with "_id" are:', result.length, result);
+					}
 				}
 			//Close connection
-			db.close();
+			db.close(function (err) {
+				if (err) {
+					console.log('Mongo Error: '+err);
+					}
+			});
 			});
   		}
 		}
@@ -149,8 +156,16 @@ app.post('/collect', function(req, res){
 			ev: 	1 
 		};
 
+		if (env_var.debug.toLowerCase() === "info" || env_var.debug.toLowerCase() === "debug") {
+			console.log("Google Analytics Data: "+JSON.stringify(GAdata));
+		}
+
+		if (env_var.debug.toLowerCase() === "debug") {
+			console.log("Google Analytics Tracking Post Output: https://www.google-analytics.com/collect?" + qs.stringify(GAdata));
+		}
+
 		// Post Data
-		request.post("https://www.google-analytics.com/collect?" + qs.stringify(GAdata), function(error, resp, body){console.log(error);});
+		request.post("https://www.google-analytics.com/collect?" + qs.stringify(GAdata), function(error, resp, body){console.log('GA Error: '+error);});
 	} else {
 		console.log("Google Analytics account ID not defined as environment variable");
 	}
@@ -274,13 +289,25 @@ app.post('/collect', function(req, res){
 		};
 
 
+		if (env_var.debug.toLowerCase() === "info" || env_var.debug.toLowerCase() === "debug") {
+			console.log("Localytics Session Start Data: \n Head: "+JSON.stringify(LCLstartHeadData)+"\n Body: "+JSON.stringify(LCLstartBodyData));
+			console.log("Localytics Event Data: \n Head: "+JSON.stringify(LCLeventHeadData)+"\n Body: "+JSON.stringify(LCLeventBodyData));
+			console.log("Localytics Session Close Data: \n Head: "+JSON.stringify(LCLcloseHeadData)+"\n Body: "+JSON.stringify(LCLcloseBodyData));
+		}
+
+		if (env_var.debug.toLowerCase() === "debug") {
+			console.log("Localytics Session Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)));
+			console.log("Localytics Event Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)));
+			console.log("Localytics Session Close Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)));
+		}
+
 		// Post Data
 		// session start
-		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)), function(error, resp, body){console.log(error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)), function(error, resp, body){console.log('Localytics Error: '+error);});
 		// event
-		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)), function(error, resp, body){console.log(error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)), function(error, resp, body){console.log('Localytics Error: '+error);});
 		// session close
-		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)), function(error, resp, body){console.log(error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)), function(error, resp, body){console.log('Localytics Error: '+error);});
 	} else {
 		console.log("Localytics application key not defined as environment variable");
 	}
@@ -323,54 +350,26 @@ app.post('/collect', function(req, res){
 			}		
 		};
 
+		if (env_var.debug.toLowerCase() === "info" || env_var.debug.toLowerCase() === "debug") {
+			console.log("Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
+			console.log("Mixpanel Engage Data: "+JSON.stringify(mixEngage));
+		}
+
+		if (env_var.debug.toLowerCase() === "debug") {
+			console.log("Mixpanel Tracking Post Output: https://api.mixpanel.com/track/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))) + "&ip=0");
+			console.log("Mixpanel Engage Post Output: https://api.mixpanel.com/engage/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixEngage))) + "&ip=0");
+		}
+
 		// Post Data
-		request.post("https://api.mixpanel.com/track/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))) + "&ip=0", function(error, resp, body){console.log(error);});
-		request.post("https://api.mixpanel.com/engage/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixEngage))) + "&ip=0", function(error, resp, body){console.log(error);});
+		request.post("https://api.mixpanel.com/track/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))) + "&ip=0", function(error, resp, body){console.log('Mixpanel Error: '+error);});
+		request.post("https://api.mixpanel.com/engage/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixEngage))) + "&ip=0", function(error, resp, body){console.log('Mixpanel Error: '+error);});
 	} else {
 		console.log("Mixpanel token not defined as environment variable");
 	}
 
 // DEBUG LOGGING
-	if (env_var.debug.toLowerCase() === "info") {
+	if (env_var.debug.toLowerCase() === "info" || env_var.debug.toLowerCase() === "debug") {
 		console.log("Raw Slack Webhook Post: "+JSON.stringify(req.body));
-		if (env_var.ga_key) {
-			console.log("Google Analytics Data: "+JSON.stringify(GAdata));
-		}
-
-		if (env_var.localytics_key) {
-			console.log("Localytics Session Start Data: \n Head: "+JSON.stringify(LCLstartHeadData)+"\n Body: "+JSON.stringify(LCLstartBodyData));
-			console.log("Localytics Event Data: \n Head: "+JSON.stringify(LCLeventHeadData)+"\n Body: "+JSON.stringify(LCLeventBodyData));
-			console.log("Localytics Session Close Data: \n Head: "+JSON.stringify(LCLcloseHeadData)+"\n Body: "+JSON.stringify(LCLcloseBodyData));
-		}
-
-		if (env_var.mixpanel_token) {
-			console.log("Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
-			console.log("Mixpanel Engage Data: "+JSON.stringify(mixEngage));
-		}
-	}
-	
-	if (env_var.debug.toLowerCase() === "debug") {
-		console.log("Raw Slack Webhook Post: "+JSON.stringify(req.body));
-		if (env_var.ga_key) {
-			console.log("Google Analytics Data: "+JSON.stringify(GAdata));
-			console.log("Google Analytics Tracking Post Output: https://www.google-analytics.com/collect?" + qs.stringify(GAdata));
-		}
-
-		if (env_var.localytics_key) {
-			console.log("Localytics Session Start Data: \n Head: "+JSON.stringify(LCLstartHeadData)+"\n Body: "+JSON.stringify(LCLstartBodyData));
-			console.log("Localytics Event Data: \n Head: "+JSON.stringify(LCLeventHeadData)+"\n Body: "+JSON.stringify(LCLeventBodyData));
-			console.log("Localytics Session Close Data: \n Head: "+JSON.stringify(LCLcloseHeadData)+"\n Body: "+JSON.stringify(LCLcloseBodyData));
-			console.log("Localytics Session Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)));
-			console.log("Localytics Event Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)));
-			console.log("Localytics Session Close Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)));
-		}
-
-		if (env_var.mixpanel_token) {
-			console.log("Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
-			console.log("Mixpanel Engage Data: "+JSON.stringify(mixEngage));
-			console.log("Mixpanel Tracking Post Output: https://api.mixpanel.com/track/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))) + "&ip=0");
-			console.log("Mixpanel Engage Post Output: https://api.mixpanel.com/engage/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixEngage))) + "&ip=0");
-		}
 	}
 });
 
