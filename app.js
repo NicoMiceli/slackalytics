@@ -134,7 +134,7 @@ app.post('/collect', function(req, res){
 			data: {
 				dt: "h",
 				pa: msgTime - 1,
-				seq:1,
+				seq: 1,
 				u: uuid.v4(),
 				attrs: {
 					dt: "a",
@@ -168,7 +168,7 @@ app.post('/collect', function(req, res){
 		var LCLeventHeadData = {
 			e: 1,
 			client_date: msgTime,
-			callback: z,
+			callback: "z",
 			data: {
 				dt: "h",
 				pa: msgTime - 1,
