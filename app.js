@@ -1,16 +1,37 @@
 //Set up Env Vars
 var env_var = {
-	environment: process.env.ENVIRONMENT,
-	debug: process.env.DEBUG,  // supports: info and debug
-	log_to_mongo: process.env.MONGO_ENABLED,
-	mongo_user: process.env.MONGO_USER_PROD,
-	mongo_password: process.env.MONGO_PASSWORD_PROD,
-	mongo_server: process.env.MONGO_SERVER_PROD,
-	mongo_port: process.env.MONGO_PORT_PROD,
-	mongo_db: process.env.MONGO_DB_PROD,
-	ga_key: process.env.GOOGLE_ANALYTICS_PROD,
-	localytics_key: process.env.LOCALYTICS_PROD,
-	mixpanel_token: process.env.MIXPANEL_PROD
+	environment: process.env.NODE_ENV, // supports: production and development
+	log_level: process.env.LOGLEVEL,  // supports: info and debug
+	write_mongo: process.env.MONGO_ENABLED, // true / false
+	analytics_track: process.env.ANALYTICS_ENABLED, // true / false
+
+	if (environment.toLowerCase() === "production") {
+		if (env_var.write_mongo === true) {
+			mongo_user: process.env.MONGO_USER_PROD,
+			mongo_password: process.env.MONGO_PASSWORD_PROD,
+			mongo_server: process.env.MONGO_SERVER_PROD,
+			mongo_port: process.env.MONGO_PORT_PROD,
+			mongo_db: process.env.MONGO_DB_PROD
+		}
+		if (env_var.analytics_track === true) {
+			ga_key: process.env.GOOGLE_ANALYTICS_PROD,
+			localytics_key: process.env.LOCALYTICS_PROD,
+			mixpanel_token: process.env.MIXPANEL_PROD
+		}
+	} else {	
+		if (env_var.write_mongo === true) {
+			mongo_user: process.env.MONGO_USER_DEV,
+			mongo_password: process.env.MONGO_PASSWORD_DEV,
+			mongo_server: process.env.MONGO_SERVER_DEV,
+			mongo_port: process.env.MONGO_PORT_DEV,
+			mongo_db: process.env.MONGO_DB_DEV,
+		}
+		if (env_var.analytics_track === true) {
+			ga_key: process.env.GOOGLE_ANALYTICS_DEV,
+			localytics_key: process.env.LOCALYTICS_DEV,
+			mixpanel_token: process.env.MIXPANEL_DEV
+		}
+	}
 };
 
 
@@ -32,9 +53,6 @@ var port = process.env.PORT || 3000;
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
-
-//MongoDB Setup
-var url = "mongodb://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_server+":"+env_var.mongo_port+"/"+env_var.mongo_db;
 
 //Simple Base64 handler
 var base64 = exports;
@@ -97,7 +115,8 @@ app.post('/collect', function(req, res){
 	var elipseCount = searchM(/\.\.\./g);
 
 
-	if (env_var.log_to_mongo) {
+	if (env_var.write_mongo === true) {
+	var url = "mongodb://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_server+":"+env_var.mongo_port+"/"+env_var.mongo_db;
 	mongodb.MongoClient.connect(url, function (err, db) {
 		if (err) {
 			console.log('Mongo Error: Unable to connect to the server. Error:', err);
@@ -129,7 +148,8 @@ app.post('/collect', function(req, res){
 	}
 
 
-// GOOGLE ANALYTICS COLLECT AND POST
+	if (env_var.analytics_track === true) {
+	// GOOGLE ANALYTICS COLLECT AND POST
 	if (env_var.ga_key) {
 		var GAdata = {
 			v: 		1,
@@ -171,7 +191,7 @@ app.post('/collect', function(req, res){
 	}
 
 
-// LOCALYTICS COLLECT AND POST
+	// LOCALYTICS COLLECT AND POST
 	if (env_var.localytics_key) {
 		var lcl_sd_values = {
 			device_id:	uuid.v4(),
@@ -312,7 +332,8 @@ app.post('/collect', function(req, res){
 		console.log("Localytics application key not defined as environment variable");
 	}
 
-// MIXPANEL COLLECT AND POST
+
+	// MIXPANEL COLLECT AND POST
 	if (env_var.mixpanel_token) {
 		var mixTrack = {
 			event:	"message posted",
@@ -374,6 +395,7 @@ app.post('/collect', function(req, res){
 		request.post("https://api.mixpanel.com/engage/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixSetEngage))) + "&ip=0", function(error, resp, body){ if(error){ console.log('Mixpanel Error: '+error);}});
 	} else {
 		console.log("Mixpanel token not defined as environment variable");
+	}
 	}
 
 // DEBUG LOGGING
