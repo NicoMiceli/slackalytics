@@ -240,11 +240,11 @@ app.post('/collect', function(req, res){
 
 		// Post Data
 		// session start
-		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)), function(error, resp, body){console.log(error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%250A"+JSON.stringify(LCLstartBodyData)), function(error, resp, body){console.log(error);});
 		// event
-		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)), function(error, resp, body){console.log(error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%250A"+JSON.stringify(LCLeventBodyData)), function(error, resp, body){console.log(error);});
 		// session close
-		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)), function(error, resp, body){console.log(error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%250A"+JSON.stringify(LCLcloseBodyData)), function(error, resp, body){console.log(error);});
 	} else {
 		console.log("Localytics application key not defined as environment variable");
 	}
@@ -324,9 +324,9 @@ app.post('/collect', function(req, res){
 			console.log("Localytics Session Start Data: \n Head: "+JSON.stringify(LCLstartHeadData)+"\n Body: "+JSON.stringify(LCLstartBodyData));
 			console.log("Localytics Event Data: \n Head: "+JSON.stringify(LCLeventHeadData)+"\n Body: "+JSON.stringify(LCLeventBodyData));
 			console.log("Localytics Session Close Data: \n Head: "+JSON.stringify(LCLcloseHeadData)+"\n Body: "+JSON.stringify(LCLcloseBodyData));
-			console.log("Localytics Session Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)));
-			console.log("Localytics Event Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)));
-			console.log("Localytics Session Close Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)));
+			console.log("Localytics Session Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%250A"+JSON.stringify(LCLstartBodyData)));
+			console.log("Localytics Event Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%250A"+JSON.stringify(LCLeventBodyData)));
+			console.log("Localytics Session Close Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%250A"+JSON.stringify(LCLcloseBodyData)));
 		}
 
 		if (env_var.mixpanel_token) {
