@@ -340,11 +340,17 @@ app.post('/collect', function(req, res){
 		engage_channel_info[channel.name] = 1;
 		engage_channel_info["total_posts"] = 1;
 
-		var mixEngage = {
+		var mixAddEngage = {
 			$distinct_id: user.id,
 			$time: msgTime,
 			$token: env_var.mixpanel_token,
-			$add: engage_channel_info,
+			$add: engage_channel_info
+		};
+
+		var mixSetEngage = {
+			$distinct_id: user.id,
+			$time: msgTime,
+			$token: env_var.mixpanel_token,
 			$set: {
 					last_post: moment.unix(msgTime).format('YYYY-MM-DDThh:mm:ss')
 			}		
@@ -352,17 +358,20 @@ app.post('/collect', function(req, res){
 
 		if (env_var.debug.toLowerCase() === "info" || env_var.debug.toLowerCase() === "debug") {
 			console.log("Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
-			console.log("Mixpanel Engage Data: "+JSON.stringify(mixEngage));
+			console.log("Mixpanel Add Engage Data: "+JSON.stringify(mixAddEngage));
+			console.log("Mixpanel Set Engage Data: "+JSON.stringify(mixSetEngage));
 		}
 
 		if (env_var.debug.toLowerCase() === "debug") {
 			console.log("Mixpanel Tracking Post Output: https://api.mixpanel.com/track/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))) + "&ip=0");
-			console.log("Mixpanel Engage Post Output: https://api.mixpanel.com/engage/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixEngage))) + "&ip=0");
+			console.log("Mixpanel Add Engage Post Output: https://api.mixpanel.com/engage/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixAddEngage))) + "&ip=0");
+			console.log("Mixpanel Set Engage Post Output: https://api.mixpanel.com/engage/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixSetEngage))) + "&ip=0");
 		}
 
 		// Post Data
 		request.post("https://api.mixpanel.com/track/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))) + "&ip=0", function(error, resp, body){ if(error){ console.log('Mixpanel Error: '+error);}});
-		request.post("https://api.mixpanel.com/engage/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixEngage))) + "&ip=0", function(error, resp, body){ if(error){ console.log('Mixpanel Error: '+error);}});
+		request.post("https://api.mixpanel.com/engage/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixAddEngage))) + "&ip=0", function(error, resp, body){ if(error){ console.log('Mixpanel Error: '+error);}});
+		request.post("https://api.mixpanel.com/engage/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixSetEngage))) + "&ip=0", function(error, resp, body){ if(error){ console.log('Mixpanel Error: '+error);}});
 	} else {
 		console.log("Mixpanel token not defined as environment variable");
 	}
