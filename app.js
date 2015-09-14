@@ -149,7 +149,7 @@ app.post('/collect', function(req, res){
 					customer_name: user.name,
 					customer_id: user.id
 				}
-			}%0A{
+			}\n{
 				dt: "s",
 				ct: msgTime,
 				u: lcl_sd_values.session_id,
@@ -184,7 +184,7 @@ app.post('/collect', function(req, res){
 					customer_name: user.name,
 					customer_id: user.id
 				}
-			}%0A{
+			}\n{
 				ct: msgTime,
 				u: uuid.v4(),
 				su: lcl_sd_values.session_id,
@@ -231,7 +231,7 @@ app.post('/collect', function(req, res){
 					customer_name: user.name,
 					customer_id: user.id
 				}
-			}%0A{
+			}\n{
 				dt: "c",
 				u: uuid.v4(),
 				ss: msgTime,
