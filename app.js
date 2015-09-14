@@ -34,7 +34,7 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 
 //MongoDB Setup
 var MongoClient = mongodb.MongoClient;
-var url = 'mongodb://'+mongo_user+':'+mongo_password+'@'+mongo_server+':'+mongo_port+'/'+mongo_db;
+var url = "mongodb://"+mongo_user+":"+mongo_password+"@"+mongo_server+":"+mongo_port+"/"+mongo_db;
 
 //Simple Base64 handler
 var base64 = exports;
