@@ -173,7 +173,7 @@ app.post('/collect', function(req, res){
 //			} else {
 //				track: "https://www.google-analytics.com/collect?"
 //			}
-		}
+		};
 
 		logger.log('debug', "Google Analytics Data: "+JSON.stringify(GAdata));
 		logger.log('debug', "Google Analytics Tracking Post Output: "google_url.track + qs.stringify(GAdata));
