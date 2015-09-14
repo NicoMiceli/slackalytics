@@ -167,9 +167,7 @@ app.post('/collect', function(req, res){
 			ev: 	1 
 		};
 
-		var google_url = {
-			track: "https://www.google-analytics.com/collect?"
-		};
+		var google_url_track = "https://www.google-analytics.com/collect?";
 
 		logger.log('debug', 'Google Analytics Data: '+JSON.stringify(GAdata));
 		logger.log('debug', 'Google Analytics Tracking Post Output: 'google_url.track + qs.stringify(GAdata));
