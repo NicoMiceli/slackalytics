@@ -165,7 +165,7 @@ app.post('/collect', function(req, res){
 		}
 
 		// Post Data
-		request.post("https://www.google-analytics.com/collect?" + qs.stringify(GAdata), function(error, resp, body){console.log('GA Error: '+error);});
+		request.post("https://www.google-analytics.com/collect?" + qs.stringify(GAdata), function(error, resp, body){ if(error){ console.log('GA Error: '+error);}});
 	} else {
 		console.log("Google Analytics account ID not defined as environment variable");
 	}
@@ -303,11 +303,11 @@ app.post('/collect', function(req, res){
 
 		// Post Data
 		// session start
-		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)), function(error, resp, body){console.log('Localytics Error: '+error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)), function(error, resp, body){ if(error){ console.log('Localytics Error: '+error);}});
 		// event
-		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)), function(error, resp, body){console.log('Localytics Error: '+error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)), function(error, resp, body){ if(error){ console.log('Localytics Error: '+error);}});
 		// session close
-		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)), function(error, resp, body){console.log('Localytics Error: '+error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)), function(error, resp, body){ if(error){ console.log('Localytics Error: '+error);}});
 	} else {
 		console.log("Localytics application key not defined as environment variable");
 	}
@@ -361,8 +361,8 @@ app.post('/collect', function(req, res){
 		}
 
 		// Post Data
-		request.post("https://api.mixpanel.com/track/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))) + "&ip=0", function(error, resp, body){console.log('Mixpanel Error: '+error);});
-		request.post("https://api.mixpanel.com/engage/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixEngage))) + "&ip=0", function(error, resp, body){console.log('Mixpanel Error: '+error);});
+		request.post("https://api.mixpanel.com/track/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))) + "&ip=0", function(error, resp, body){ if(error){ console.log('Mixpanel Error: '+error);}});
+		request.post("https://api.mixpanel.com/engage/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixEngage))) + "&ip=0", function(error, resp, body){ if(error){ console.log('Mixpanel Error: '+error);}});
 	} else {
 		console.log("Mixpanel token not defined as environment variable");
 	}
