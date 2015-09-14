@@ -1,9 +1,15 @@
 //Set up Env Vars
 var env_var = {
+	environment = process.env.ENVIRONMENT,
 	debug: process.env.DEBUG,  // supports: info and debug
+	mongo_user: process.env.MONGO_USER_PROD,
+	mongo_password: process.env.MONGO_PASSWORD_PROD,
+	mongo_server: process.env.MONGO_SERVER_PROD,
+	mongo_port: process.env.MONGO_PORT_PROD,
+	mongo_db: process.env.MONGO_DB_PROD,
 	ga_key: process.env.GOOGLE_ANALYTICS_PROD,
 	localytics_key: process.env.LOCALYTICS_PROD,
-	mixpanel_token: process.env.MIXPANEL_PROD
+	mixpanel_token: process.env.MIXPANEL_PROD,
 };
 
 
@@ -15,6 +21,7 @@ var qs = require('querystring');
 var math = require('mathjs');
 var moment = require('moment');
 var uuid = require('node-uuid');
+var mongodb = require('mongodb');
 
 //Server Details
 var app = express();
@@ -24,6 +31,10 @@ var port = process.env.PORT || 3000;
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
+
+//MongoDB Setup
+var MongoClient = mongodb.MongoClient;
+var url = 'mongodb://'+mongo_user+':'+mongo_password+'@'+mongo_server+':'+mongo_port+'/'+mongo_db;
 
 //Simple Base64 handler
 var base64 = exports;
@@ -84,6 +95,30 @@ app.post('/collect', function(req, res){
 	var exclaCount = searchM(/!/g);
 	var questionMark = searchM(/\?/g);
 	var elipseCount = searchM(/\.\.\./g);
+
+
+	if (env_var.log_to_mongo) {
+	MongoClient.connect(url, function (err, db) {
+		if (err) {
+			console.log('Unable to connect to the mongoDB server. Error:', err);
+		} else {
+			console.log('Connection established to', url);
+    		var collection = db.collection('posts');
+
+			// Insert post contents
+			collection.insert(req.body, function (err, result) {
+				if (err) {
+					console.log(err);
+				} else {
+					console.log('Inserted %d documents into the "posts" collection. The documents inserted with "_id" are:', result.length, result);
+				}
+			//Close connection
+			db.close();
+			});
+  		}
+		}
+	);
+	}
 
 
 // GOOGLE ANALYTICS COLLECT AND POST
