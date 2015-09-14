@@ -1,6 +1,6 @@
 //Set up Env Vars
 var env_var = {
-	environment: process.env.NODE_ENV || 'development';, // supports: production and development
+	environment: process.env.NODE_ENV || 'development', // supports: production and development
 	log_level: process.env.LOGLEVEL,  // supports: debug, error, warn, info, off
 	write_mongo: process.env.MONGO_ENABLED, // true / false
 	analytics_track: process.env.ANALYTICS_ENABLED, // true / false
