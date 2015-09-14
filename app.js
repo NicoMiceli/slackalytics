@@ -2,6 +2,7 @@
 var env_var = {
 	environment: process.env.ENVIRONMENT,
 	debug: process.env.DEBUG,  // supports: info and debug
+	log_to_mongo: process.env.MONGO_ENABLED,
 	mongo_user: process.env.MONGO_USER_PROD,
 	mongo_password: process.env.MONGO_PASSWORD_PROD,
 	mongo_server: process.env.MONGO_SERVER_PROD,
@@ -34,7 +35,7 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 
 //MongoDB Setup
 var MongoClient = mongodb.MongoClient;
-var url = "mongodb://"+mongo_user+":"+mongo_password+"@"+mongo_server+":"+mongo_port+"/"+mongo_db;
+var url = "mongodb://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_server+":"+env_var.mongo_port+"/"+env_var.mongo_db;
 
 //Simple Base64 handler
 var base64 = exports;
