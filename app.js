@@ -128,7 +128,6 @@ app.post('/collect', function(req, res){
 		};
 	
 		var LCLstartHeadData = {
-			data: {
 				dt: "h",
 				pa: msgTime - 1,
 				seq: 1,
@@ -146,7 +145,6 @@ app.post('/collect', function(req, res){
 					customer_name: user.name,
 					customer_id: user.id
 				}
-			}
 		};
 
 		var LCLstartBodyData = {
@@ -163,7 +161,6 @@ app.post('/collect', function(req, res){
 
 
 		var LCLeventHeadData = {
-			data: {
 				dt: "h",
 				pa: msgTime - 1,
 				seq: 2,
@@ -181,7 +178,6 @@ app.post('/collect', function(req, res){
 					customer_name: user.name,
 					customer_id: user.id
 				}
-			}
 		};
 			
 		var LCLeventBodyData = {
@@ -209,7 +205,6 @@ app.post('/collect', function(req, res){
 
 
 		var LCLcloseHeadData = {
-			data: {
 				dt: "h",
 				pa: msgTime - 1,
 				seq: 3,
@@ -227,7 +222,6 @@ app.post('/collect', function(req, res){
 					customer_name: user.name,
 					customer_id: user.id
 				}
-			}
 		};
 			
 		var LCLcloseBodyData = {
@@ -246,11 +240,11 @@ app.post('/collect', function(req, res){
 
 		// Post Data
 		// session start
-		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&" + escape(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)), function(error, resp, body){console.log(error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + escape(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)), function(error, resp, body){console.log(error);});
 		// event
-		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&" + escape(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)), function(error, resp, body){console.log(error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + escape(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)), function(error, resp, body){console.log(error);});
 		// session close
-		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&" + escape(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)), function(error, resp, body){console.log(error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + escape(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)), function(error, resp, body){console.log(error);});
 	} else {
 		console.log("Localytics application key not defined as environment variable");
 	}
@@ -330,9 +324,9 @@ app.post('/collect', function(req, res){
 			console.log("Localytics Session Start Data: \n Head: "+JSON.stringify(LCLstartHeadData)+"\n Body: "+JSON.stringify(LCLstartBodyData));
 			console.log("Localytics Event Data: \n Head: "+JSON.stringify(LCLeventHeadData)+"\n Body: "+JSON.stringify(LCLeventBodyData));
 			console.log("Localytics Session Close Data: \n Head: "+JSON.stringify(LCLcloseHeadData)+"\n Body: "+JSON.stringify(LCLcloseBodyData));
-			console.log("Localytics Session Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&" + escape(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)));
-			console.log("Localytics Event Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&" + escape(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)));
-			console.log("Localytics Session Close Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&" + escape(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)));
+			console.log("Localytics Session Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + escape(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)));
+			console.log("Localytics Event Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + escape(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)));
+			console.log("Localytics Session Close Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data=" + escape(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)));
 		}
 
 		if (env_var.mixpanel_token) {
