@@ -2,7 +2,8 @@
 var env_var = {
 	debug: process.env.DEBUG,  // supports: info and debug
 	ga_key: process.env.GOOGLE_ANALYTICS_PROD,
-	mixpanel_key: process.env.MIXPANEL_PROD
+	localytics_key: process.env.LOCALYTICS_PROD,
+	mixpanel_token: process.env.MIXPANEL_PROD
 };
 
 
@@ -13,6 +14,7 @@ var request = require('request');
 var qs = require('querystring');
 var math = require('mathjs');
 var moment = require('moment');
+var uuid = require('node-uuid');
 
 //Server Details
 var app = express();
@@ -67,7 +69,7 @@ app.post('/collect', function(req, res){
 			return searchStr.length;
 		}
 		return 0;
-	};
+	}
 
 	function searchS(regex){
 		var searchStr = msgText.split(regex);
@@ -75,7 +77,7 @@ app.post('/collect', function(req, res){
 			return searchStr.length;
 		}
 		return 0;
-	};
+	}
 
 	var wordCount = searchS(/\s+\b/);
 	var emojiCount = searchM(/:[a-z_0-9]*:/g);
@@ -117,8 +119,143 @@ app.post('/collect', function(req, res){
 		console.log("Google Analytics account ID not defined as environment variable");
 	}
 
+
+// LOCALYTICS COLLECT AND POST
+	if (env_var.localytics_key) {
+		var lcl_sd_values = {
+			device_id:	uuid.v4(),
+			session_id:	uuid.v4(),
+		};
+	
+		var LCLstartData = {
+			e: 1,
+			client_date: msgTime,
+			callback: "z",
+			data: {
+				dt: "h",
+				pa: msgTime - 1,
+				seq:1,
+				u: uuid.v4(),
+				attrs: {
+					dt: "a",
+					au: env_var.localytics_key,
+					iu: lcl_sd_values.device_id,
+					lv: "slackalytics_0.0.1",
+					dmo: "Slack",
+					dll: "EN-US",
+					dma: "Slack"
+				},
+				ids: {
+					customer_name: user.name,
+					customer_id: user.id
+				}
+			}%0A{
+				dt: "s",
+				ct: msgTime,
+				u: lcl_sd_values.session_id,
+				nth: 1,
+				mc: null,
+				mm: null,
+				ms: null,
+				cid: user.id,
+				utp: "known"
+				}
+		};
+
+		var LCLeventData = {
+			e: 1,
+			client_date: msgTime,
+			callback: z,
+			data: {
+				dt: "h",
+				pa: msgTime - 1,
+				seq: 2,
+				u: uuid.v4(),
+				attrs: {
+					dt: "a",
+					au: env_var.localytics_key,
+					iu: lcl_sd_values.device_id,
+					lv: "slackalytics_0.0.1",
+					dmo: "Slack",
+					dll: "EN-US",
+					dma: "Slack"
+				},
+				ids: {
+					customer_name: user.name,
+					customer_id: user.id
+				}
+			}%0A{
+				ct: msgTime,
+				u: uuid.v4(),
+				su: lcl_sd_values.session_id,
+				mc: null,
+				mm: null,
+				ms: null,
+				dt: "e",
+				n: "message posted",
+				cid: user.id,
+				utp: "known",
+				attrs: {
+					user: user.name + " (" + user.id + ")",
+					channel: channel.name + " (" + channel.id + ")",
+					words: wordCount,
+					emojis: emojiCount,
+					exclamations: exclaCount,
+					ellipsis: elipseCount,
+					question_marks: questionMark,
+					domain: teamDomain+".slack.com"
+				}
+			}
+		};
+
+
+		var LCLcloseData = {
+			e: 1,
+			client_date: msgTime,
+			callback: "z",
+			data: {
+				dt: "h",
+				pa: msgTime - 1,
+				seq: 3,
+				u: uuid.v4(),
+				attrs: {
+					dt: "a",
+					au: env_var.localytics_key,
+					iu: lcl_sd_values.device_id,
+					lv: "slackalytics_0.0.1",
+					dmo: "Slack",
+					dll: "EN-US",
+					dma: "Slack"
+				},
+				ids: {
+					customer_name: user.name,
+					customer_id: user.id
+				}
+			}%0A{
+				dt: "c",
+				u: uuid.v4(),
+				ss: msgTime,
+				su: lcl_sd_values.session_id,
+				ct: msgTime,
+				ctl: 0,
+				cta: 0,
+				fl:[],
+				cid: user.id,
+				utp: "known"
+			}
+		};
+
+		// Post Data
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLstartData), function(error, resp, body){console.log(error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLeventData), function(error, resp, body){console.log(error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLcloseData), function(error, resp, body){console.log(error);});
+	} else {
+		console.log("Localytics application key not defined as environment variable");
+	}
+
+
 // MIXPANEL COLLECT AND POST
-	if (env_var.mixpanel_key) {
+	if (env_var.mixpanel_token) {
 		var mixTrack = {
 			event:	"message posted",
 			properties:	{
@@ -137,7 +274,7 @@ app.post('/collect', function(req, res){
 					channel: channel.name + " (" + channel.id + ")",
 					user: user.name + " (" + user.id + ")",
 					time: msgTime,
-					token: env_var.mixpanel_key
+					token: env_var.mixpanel_token
 				}
 		};
 
@@ -148,7 +285,7 @@ app.post('/collect', function(req, res){
 		var mixEngage = {
 			$distinct_id: user.id,
 			$time: msgTime,
-			$token: env_var.mixpanel_key,
+			$token: env_var.mixpanel_token,
 			$add: engage_channel_info,
 			$set: {
 					last_post: moment.unix(msgTime).format('YYYY-MM-DDThh:mm:ss')
@@ -168,7 +305,10 @@ app.post('/collect', function(req, res){
 		if (env_var.ga_key) {
 			console.log("Google Analytics Data: "+JSON.stringify(GAdata));
 		}
-		if (env_var.mixpanel_key) {
+		if (env_var.localytics_key) {
+			console.log("Localytics Data: "+JSON.stringify(LCLdata));
+		}
+		if (env_var.mixpanel_token) {
 			console.log("Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
 			console.log("Mixpanel Engage Data: "+JSON.stringify(mixEngage));
 		}
@@ -180,7 +320,11 @@ app.post('/collect', function(req, res){
 			console.log("Google Analytics Data: "+JSON.stringify(GAdata));
 			console.log("Google Analytics Tracking Post Output: https://www.google-analytics.com/collect?" + qs.stringify(GAdata));
 		}
-		if (env_var.mixpanel_key) {
+		if (env_var.localytics_key) {
+			console.log("Localytics Data: "+JSON.stringify(GAdata));
+			console.log("Localytics Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLdata));
+		}
+		if (env_var.mixpanel_token) {
 			console.log("Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
 			console.log("Mixpanel Engage Data: "+JSON.stringify(mixEngage));
 			console.log("Mixpanel Tracking Post Output: https://api.mixpanel.com/track/?data=" + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))) + "&ip=0");
