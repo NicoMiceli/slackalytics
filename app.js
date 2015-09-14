@@ -115,7 +115,7 @@ app.post('/collect', function(req, res){
 	
 	mongodb.MongoClient.connect(url, function (err, db) {
 		if (err) {
-			logger.log('error', 'Mongo Error: Unable to connect to the server. Error: ' + err);
+			logger.log('error', 'Mongo Error: Unable to connect to the server. Error: ' + JSON.stringify(err));
 		} else {
 			logger.log('debug','Mongo: Connection established to '+url);
     		var collection = db.collection(collection_name);
@@ -123,14 +123,14 @@ app.post('/collect', function(req, res){
 			// Insert post contents
 			collection.insert(req.body, function (err, result) {
 				if (err) {
-					logger.log('error', 'Mongo Error: '+err);
+					logger.log('error', 'Mongo Error: '+JSON.stringify(err));
 				} else {
-					logger.log('debug', 'Mongo: '+result.length+' inserted documents into the '+collection_name+' collection. The documents inserted with "_id" are: '+result);
+					logger.log('debug', 'Mongo: '+result.length+' inserted documents into the '+collection_name+' collection. The documents inserted with "_id" are: '+JSON.stringify(result));
 				}
 			//Close connection
 			db.close(function (err) {
 				if (err) {
-					logger.log('error','Mongo Error: '+err);
+					logger.log('error','Mongo Error: '+JSON.stringify(err));
 					}
 			});
 			});
@@ -181,9 +181,9 @@ app.post('/collect', function(req, res){
 		// Post Data
 		request.post(google_url.track + qs.stringify(GAdata), function(error, resp, body) {
 				if(error) {
-					logger.log('error', 'Google Analytics Error: '+error);
+					logger.log('error', 'Google Analytics Error: '+JSON.stringify(error));
 				}
-				logger.log('debug', 'Google Analytics Tracking Response Debug: '+resp);
+				logger.log('debug', 'Google Analytics Tracking Response Debug: '+JSON.stringify(resp));
 		});
 	} else {
 		logger.log('info',"Google Analytics account ID not defined as environment variable");
@@ -326,23 +326,23 @@ app.post('/collect', function(req, res){
 		// Post Data
 		// Session Start
 		request.post(localytics_url.track + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)), function(error, resp, body) {
-				logger.log('debug','Localytics Tracking Start Response Debug: '+resp);
+				logger.log('debug','Localytics Tracking Start Response Debug: '+JSON.stringify(resp));
 				if(error) {
-					logger.log('error', 'Localytics Error: '+error);
+					logger.log('error', 'Localytics Error: '+JSON.stringify(error));
 				}
 		});
 		// Event
 		request.post(localytics_url.track + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)), function(error, resp, body) {
-				logger.log('debug','Localytics Tracking Event Response Debug: '+resp);
+				logger.log('debug','Localytics Tracking Event Response Debug: '+JSON.stringify(resp));
 				if(error) {
-					logger.log('error', 'Localytics Error: '+error);
+					logger.log('error', 'Localytics Error: '+JSON.stringify(error));
 				}
 		});
 		// Session Close
 		request.post(localytics_url.track + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)), function(error, resp, body) {
-				logger.log('debug','Localytics Tracking Close Response Debug: '+resp);
+				logger.log('debug','Localytics Tracking Close Response Debug: '+JSON.stringify(resp));
 				if(error) {
-					logger.log('error', 'Localytics Error: '+error);
+					logger.log('error', 'Localytics Error: '+JSON.stringify(error));
 				}
 		});
 	} else {
@@ -414,21 +414,21 @@ app.post('/collect', function(req, res){
 
 		// Post Data
 		request.post(mixpanel_url.track + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))), function(error, resp, body) {
-				logger.log('debug', 'Mixpanel Tracking Response Debug: '+resp);
+				logger.log('debug', 'Mixpanel Tracking Response Debug: '+JSON.stringify(resp));
 				if(error) {
-					logger.log('error','Mixpanel Error: '+error);
+					logger.log('error','Mixpanel Error: '+JSON.stringify(error));
 				}
 		});
 		request.post(mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixAddEngage))), function(error, resp, body) {
-				logger.log('debug', 'Mixpanel Engage Response Debug: '+resp);
+				logger.log('debug', 'Mixpanel Engage Response Debug: '+JSON.stringify(resp));
 				if(error) {
-					logger.log('error', 'Mixpanel Error: '+error);
+					logger.log('error', 'Mixpanel Error: '+JSON.stringify(error));
 				}
 		});
 		request.post(mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixSetEngage))), function(error, resp, body) {
-				logger.log('debug', 'Mixpanel Engage Response Debug: '+resp);
+				logger.log('debug', 'Mixpanel Engage Response Debug: '+JSON.stringify(resp));
 				if(error) {
-					logger.log('error', 'Mixpanel Error: '+error);
+					logger.log('error', 'Mixpanel Error: '+JSON.stringify(error));
 				}
 		});
 	} else {
