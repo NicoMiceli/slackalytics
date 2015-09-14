@@ -5,7 +5,7 @@ var env_var = {
 	write_mongo: process.env.MONGO_ENABLED, // true / false
 	analytics_track: process.env.ANALYTICS_ENABLED, // true / false
 
-	if (env_var.environment.toLowerCase() === "production") {
+/*	if (env_var.environment.toLowerCase() === "production") { */
 		if (env_var.write_mongo === true) {
 			mongo_user: process.env.MONGO_USER_PROD,
 			mongo_password: process.env.MONGO_PASSWORD_PROD,
@@ -18,7 +18,7 @@ var env_var = {
 			localytics_key: process.env.LOCALYTICS_PROD,
 			mixpanel_token: process.env.MIXPANEL_PROD,
 		}
-	} else {	
+/*	} else {	
 		if (env_var.write_mongo === true) {
 			mongo_user: process.env.MONGO_USER_DEV,
 			mongo_password: process.env.MONGO_PASSWORD_DEV,
@@ -31,7 +31,7 @@ var env_var = {
 			localytics_key: process.env.LOCALYTICS_DEV,
 			mixpanel_token: process.env.MIXPANEL_DEV,
 		}
-	}
+	} */
 };
 
 
