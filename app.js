@@ -127,8 +127,8 @@ app.post('/collect', function(req, res){
 			session_id:	uuid.v4(),
 		};
 	
-		var LCLstartData = {
-			{e: 1,
+		var LCLstartHeadData = {
+			e: 1,
 			client_date: msgTime,
 			callback: "z",
 			data: {
@@ -149,21 +149,24 @@ app.post('/collect', function(req, res){
 					customer_name: user.name,
 					customer_id: user.id
 				}
-			}\n{
-				dt: "s",
-				ct: msgTime,
-				u: lcl_sd_values.session_id,
-				nth: 1,
-				mc: null,
-				mm: null,
-				ms: null,
-				cid: user.id,
-				utp: "known"
-				}}
+			}
 		};
 
-		var LCLeventData = {
-			{e: 1,
+		var LCLstartBodyData = {
+			dt: "s",
+			ct: msgTime,
+			u: lcl_sd_values.session_id,
+			nth: 1,
+			mc: null,
+			mm: null,
+			ms: null,
+			cid: user.id,
+			utp: "known"
+		};
+
+
+		var LCLeventHeadData = {
+			e: 1,
 			client_date: msgTime,
 			callback: z,
 			data: {
@@ -184,33 +187,35 @@ app.post('/collect', function(req, res){
 					customer_name: user.name,
 					customer_id: user.id
 				}
-			}\n{
-				ct: msgTime,
-				u: uuid.v4(),
-				su: lcl_sd_values.session_id,
-				mc: null,
-				mm: null,
-				ms: null,
-				dt: "e",
-				n: "message posted",
-				cid: user.id,
-				utp: "known",
-				attrs: {
-					user: user.name + " (" + user.id + ")",
-					channel: channel.name + " (" + channel.id + ")",
-					words: wordCount,
-					emojis: emojiCount,
-					exclamations: exclaCount,
-					ellipsis: elipseCount,
-					question_marks: questionMark,
-					domain: teamDomain+".slack.com"
-				}
-			}}
+			}
+		};
+			
+		var LCLeventBodyData = {
+			ct: msgTime,
+			u: uuid.v4(),
+			su: lcl_sd_values.session_id,
+			mc: null,
+			mm: null,
+			ms: null,
+			dt: "e",
+			n: "message posted",
+			cid: user.id,
+			utp: "known",
+			attrs: {
+				user: user.name + " (" + user.id + ")",
+				channel: channel.name + " (" + channel.id + ")",
+				words: wordCount,
+				emojis: emojiCount,
+				exclamations: exclaCount,
+				ellipsis: elipseCount,
+				question_marks: questionMark,
+				domain: teamDomain+".slack.com"
+			}
 		};
 
 
-		var LCLcloseData = {
-			{e: 1,
+		var LCLcloseHeadData = {
+			e: 1,
 			client_date: msgTime,
 			callback: "z",
 			data: {
@@ -231,7 +236,10 @@ app.post('/collect', function(req, res){
 					customer_name: user.name,
 					customer_id: user.id
 				}
-			}\n{
+			}
+		};
+			
+		var LCLcloseBodyData = {
 				dt: "c",
 				u: uuid.v4(),
 				ss: msgTime,
@@ -242,16 +250,16 @@ app.post('/collect', function(req, res){
 				fl:[],
 				cid: user.id,
 				utp: "known"
-			}}
 		};
+
 
 		// Post Data
 		// session start
-		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLstartData), function(error, resp, body){console.log(error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLstartHeadData) + "%0A" + qs.stringify(LCLstartBodyData), function(error, resp, body){console.log(error);});
 		// event
-		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLeventData), function(error, resp, body){console.log(error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLeventHeadData) + "%0A" + qs.stringify(LCLeventBodyData), function(error, resp, body){console.log(error);});
 		// session close
-		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLcloseData), function(error, resp, body){console.log(error);});
+		request.post("https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLcloseHeadData) + "%0A" + qs.stringify(LCLcloseBodyData), function(error, resp, body){console.log(error);});
 	} else {
 		console.log("Localytics application key not defined as environment variable");
 	}
@@ -326,12 +334,12 @@ app.post('/collect', function(req, res){
 			console.log("Google Analytics Tracking Post Output: https://www.google-analytics.com/collect?" + qs.stringify(GAdata));
 		}
 		if (env_var.localytics_key) {
-			console.log("Localytics Session Start Data: "+JSON.stringify(LCLstartData));
-			console.log("Localytics Event Data: "+JSON.stringify(LCLeventData));
-			console.log("Localytics Session Close Data: "+JSON.stringify(LCLcloseData));
-			console.log("Localytics Session Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLstartData));
-			console.log("Localytics Event Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLeventData));
-			console.log("Localytics Session Close Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLcloseData));
+			console.log("Localytics Session Start Data:"+\n+"Head: "+JSON.stringify(LCLstartHeadData)+\n+"Body: "+JSON.stringify(LCLstartBodyData));
+			console.log("Localytics Event Data:"+\n+"Head: "+JSON.stringify(LCLeventHeadData)+\n+"Body: "+JSON.stringify(LCLeventBodyData));
+			console.log("Localytics Session Close Data:"+\n+"Head: "+JSON.stringify(LCLcloseHeadData)+\n+"Body: "+JSON.stringify(LCLcloseBodyData));
+			console.log("Localytics Session Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLstartHeadData) + "%0A" + qs.stringify(LCLstartBodyData));
+			console.log("Localytics Event Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLeventHeadData) + "%0A" + qs.stringify(LCLeventBodyData));
+			console.log("Localytics Session Close Start Tracking Post Output: https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?" + qs.stringify(LCLcloseHeadData) + "%0A" + qs.stringify(LCLcloseBodyData));
 		}
 		if (env_var.mixpanel_token) {
 			console.log("Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
