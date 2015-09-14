@@ -5,7 +5,7 @@ var env_var = {
 	write_mongo: process.env.MONGO_ENABLED, // true / false
 	analytics_track: process.env.ANALYTICS_ENABLED, // true / false
 
-	if (environment.toLowerCase() === "production") {
+	if (env_var.environment.toLowerCase() === "production") {
 		if (env_var.write_mongo === true) {
 			mongo_user: process.env.MONGO_USER_PROD,
 			mongo_password: process.env.MONGO_PASSWORD_PROD,
