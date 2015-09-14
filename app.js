@@ -4,14 +4,14 @@ var env_var = {
 	log_level: process.env.LOGLEVEL,  // supports: debug, error, warn, info, off
 	write_mongo: process.env.MONGO_ENABLED, // true / false
 	analytics_track: process.env.ANALYTICS_ENABLED, // true / false
-			mongo_user: process.env.MONGO_USER_PROD,
-			mongo_password: process.env.MONGO_PASSWORD_PROD,
-			mongo_server: process.env.MONGO_SERVER_PROD,
-			mongo_port: process.env.MONGO_PORT_PROD,
-			mongo_db: process.env.MONGO_DB_PROD,
-			ga_key: process.env.GOOGLE_ANALYTICS_PROD,
-			localytics_key: process.env.LOCALYTICS_PROD,
-			mixpanel_token: process.env.MIXPANEL_PROD
+	mongo_user: process.env.MONGO_USER_PROD,
+	mongo_password: process.env.MONGO_PASSWORD_PROD,
+	mongo_server: process.env.MONGO_SERVER_PROD,
+	mongo_port: process.env.MONGO_PORT_PROD,
+	mongo_db: process.env.MONGO_DB_PROD,
+	ga_key: process.env.GOOGLE_ANALYTICS_PROD,
+	localytics_key: process.env.LOCALYTICS_PROD,
+	mixpanel_token: process.env.MIXPANEL_PROD
 };
 
 		
@@ -109,7 +109,7 @@ app.post('/collect', function(req, res){
 	var elipseCount = searchM(/\.\.\./g);
 
 
-	if (env_var.write_mongo === true) {
+	if (env_var.write_mongo) {
 	var url = "mongodb://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_server+":"+env_var.mongo_port+"/"+env_var.mongo_db;
 	var collection_name = "posts";
 	
@@ -139,7 +139,7 @@ app.post('/collect', function(req, res){
 	);
 	}
 
-	if (env_var.analytics_track === true) {
+	if (env_var.analytics_track) {
 	// GOOGLE ANALYTICS COLLECT AND POST
 	if (env_var.ga_key) {
 		var GAdata = {
