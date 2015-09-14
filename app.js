@@ -317,9 +317,9 @@ app.post('/collect', function(req, res){
 			console.log("Google Analytics Data: "+JSON.stringify(GAdata));
 		}
 		if (env_var.localytics_key) {
-			console.log("Localytics Session Start Data: "+JSON.stringify(LCLstartData));
-			console.log("Localytics Event Data: "+JSON.stringify(LCLeventData));
-			console.log("Localytics Session Close Data: "+JSON.stringify(LCLcloseData));
+			console.log("Localytics Session Start Data: \n Head: "+JSON.stringify(LCLstartHeadData)+"\n Body: "+JSON.stringify(LCLstartBodyData));
+			console.log("Localytics Event Data: \n Head: "+JSON.stringify(LCLeventHeadData)+"\n Body: "+JSON.stringify(LCLeventBodyData));
+			console.log("Localytics Session Close Data: \n Head: "+JSON.stringify(LCLcloseHeadData)+"\n Body: "+JSON.stringify(LCLcloseBodyData));
 		}
 		if (env_var.mixpanel_token) {
 			console.log("Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
