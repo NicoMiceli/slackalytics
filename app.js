@@ -168,15 +168,11 @@ app.post('/collect', function(req, res){
 		};
 
 		var google_url = {
-//			if (logging["level"].toLowerCase() === "debug") {
-				track: "https://www.google-analytics.com/collect?"
-//			} else {
-//				track: "https://www.google-analytics.com/collect?"
-//			}
+			track: "https://www.google-analytics.com/collect?"
 		};
 
-		logger.log('debug', "Google Analytics Data: "+JSON.stringify(GAdata));
-		logger.log('debug', "Google Analytics Tracking Post Output: "google_url.track + qs.stringify(GAdata));
+		logger.log('debug', 'Google Analytics Data: '+JSON.stringify(GAdata));
+		logger.log('debug', 'Google Analytics Tracking Post Output: 'google_url.track + qs.stringify(GAdata));
 
 		// Post Data
 		request.post(google_url.track + qs.stringify(GAdata), function(error, resp, body) {
