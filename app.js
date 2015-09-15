@@ -309,7 +309,7 @@ app.post('/collect', function(req, res){
 		};
 
 		var localytics_url = {
-//			if (logging["level"].toLowerCase() === "debug") {
+//		if (logger[debugLevel].toLowerCase() == "debug") {
 //				track: "https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data="
 //			} else {
 				track: "https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data="
