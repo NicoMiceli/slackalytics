@@ -11,7 +11,8 @@
     "mathjs": "^2.0.0",
     "moment": "^2.4.0",
     "node-uuid": "^1.4.0",
-    "mongodb": "~2.0"
+    "mongodb": "~2.0",
+    "le-node": "^1.1.0"
   },
   "scripts": {
     "start": "node app.js"

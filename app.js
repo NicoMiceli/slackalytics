@@ -11,7 +11,8 @@ var env_var = {
 	mongo_db: process.env.MONGO_DB_PROD,
 	ga_key: process.env.GOOGLE_ANALYTICS_PROD,
 	localytics_key: process.env.LOCALYTICS_PROD,
-	mixpanel_token: process.env.MIXPANEL_PROD
+	mixpanel_token: process.env.MIXPANEL_PROD,
+	logentries_token: process.env.LOGENTRIES_PROD
 };
 
 		
@@ -24,10 +25,16 @@ var math = require('mathjs');
 var moment = require('moment');
 var uuid = require('node-uuid');
 var mongodb = require('mongodb');
+var logentries = require('le_node');
 
 //Server Details
 var app = express();
 var port = process.env.PORT || 3000;
+
+//Logentries Service
+var le = new logentries({
+	token: logentries_token
+});
 
 //Logger
 var logger = exports;
@@ -39,9 +46,9 @@ logger.log = function(level, message) {
 			message = JSON.stringify(message);
 		}
 		console.log(level+': '+message);
+		le.log(level, message);
 		}
 };
-
 
 //Set Body Parser
 app.use(bodyParser.urlencoded({extended: true}));
