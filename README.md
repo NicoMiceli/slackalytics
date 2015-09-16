@@ -1,7 +1,3 @@
 # Slackalytics
 
-Slackalytics is a textual analysis bot built in Node.js that allows for deeper custome analytics by sending message strings to Google Analysis via Slacks realtime API and Google Analytics Measurement Protocol.
-
-More Readme info is coming soon
-
-In the meantime checkout the post for this on my blog: http://nicomiceli.com/slackalytics/ 
+Slackalytics is a textual analysis bot built in Node.js that allows for deeper customer analytics by sending message strings to analytics solutions via Slacks realtime outbound webhook API and respective analytics solution data collection services.
