@@ -33,7 +33,7 @@ var port = process.env.PORT || 3000;
 
 //Logentries Service
 var le = new logentries({
-	token: logentries_token
+	token: env_var.logentries_token
 });
 
 //Logger
