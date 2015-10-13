@@ -93,6 +93,7 @@ app.post('/collect', function(req, res){
 		function(error, resp, body){
 		console.log(error);
 	})
+	res.send("OK")
 });
 
 //Start Server
