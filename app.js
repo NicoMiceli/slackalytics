@@ -86,13 +86,20 @@ app.post('/collect', function(req, res){
 		el: 	msgText,
 		ev: 	1 
 	};
-	console.log(JSON.stringify(data));
+
+	//Make Post Request
+  var request_options = {
+  	url: 'https://www.google-analytics.com/collect',
+  	body: qs.stringify(data),
+  	headers: { 'User-Agent': 'slackalytics.js' }
+  }
+
 	console.log(req.body);
-	//Make Post Request	
-	request.post("https://www.google-analytics.com/collect?" + qs.stringify(data), 
-		function(error, resp, body){
-		console.log(error);
-	})
+  console.log(request_options);
+
+  function request_callback(error, resp, body) { if (error) { console.log(error); } }
+
+  request.post(request_options, request_callback)
 	res.send("OK")
 });
 
