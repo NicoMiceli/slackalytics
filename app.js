@@ -70,7 +70,6 @@ app.post('/collect', function(req, res){
 		cs: 	"slack", // campaign source
 		cd1: 	user.id,
 		cd2: 	channel.name,
-		cd3: 	msgText,
 		cm1: 	wordCount,
 		cm2: 	emojiCount,
 		cm3: 	exclaCount,
@@ -83,7 +82,7 @@ app.post('/collect', function(req, res){
 		t: 		"event",
 		ec: 	"slack: "+ channel.name + "|" + channel.id,
 		ea: 	"post by " + user.id,
-		el: 	msgText,
+		el: 	"slack post",
 		ev: 	1 
 	};
 	console.log(JSON.stringify(data));
