@@ -68,15 +68,15 @@ app.post('/collect', function(req, res){
 		cid: 	user.id,
 		ds:  	"slack", //data source
 		cs: 	"slack", // campaign source
-		cd1: 	user.id,
-		cd2: 	channel.name,
-		cd3: 	msgText,
-		cm1: 	wordCount,
-		cm2: 	emojiCount,
-		cm3: 	exclaCount,
-	//	cm4: 	letterCount,
-		cm5: 	elipseCount, 
-		cm6: 	questionMark, //need to set up in GA
+		dimension1: 	user.id,
+		dimension2: 	channel.name,
+		dimension3: 	msgText,
+		metric1: 	wordCount,
+		metric2: 	emojiCount,
+		metric3: 	exclaCount,
+	//	metric4: 	letterCount,
+		metric5: 	elipseCount, 
+		metric6: 	questionMark, //need to set up in GA
 		dh:		teamDomain+".slack.com",
 		dp:		"/"+channel.name,
 		dt:		"Slack Channel: "+channel.name,
