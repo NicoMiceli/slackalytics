@@ -175,11 +175,7 @@ app.post('/collect', function(req, res){
 		};
 
 		var google_url = {
-//			if (logging["level"].toLowerCase() === "debug") {
 				track: "https://www.google-analytics.com/collect?"
-//			} else {
-//				track: "https://www.google-analytics.com/collect?"
-//			}
 		};
 
 		logger.log('debug', "Google Analytics Data: "+JSON.stringify(GAdata));
@@ -195,167 +191,6 @@ app.post('/collect', function(req, res){
 	} else {
 		logger.log('info',"Google Analytics account ID not defined as environment variable");
 	}
-
-
-	// LOCALYTICS COLLECT AND POST
-	if (env_var.localytics_key) {
-		var lcl_sd_values = {
-			device_id:	uuid.v4(),
-			session_id:	uuid.v4()
-		};
-
-		// Localytics Session Start
-		var LCLstartHeadData = {
-				dt: "h",
-				pa: msgTime - 1,
-				seq: 1,
-				u: uuid.v4(),
-				attrs: {
-					dt: "a",
-					au: env_var.localytics_key,
-					iu: lcl_sd_values.device_id,
-					lv: "slackalytics_0.0.1",
-					dmo: "Slack",
-					dll: "EN-US",
-					dma: "Slack"
-				},
-				ids: {
-					customer_name: user.name,
-					customer_id: user.id
-				}
-		};
-
-		var LCLstartBodyData = {
-			dt: "s",
-			ct: msgTime,
-			u: lcl_sd_values.session_id,
-			nth: 1,
-			mc: null,
-			mm: null,
-			ms: null,
-			cid: user.id,
-			utp: "known"
-		};
-
-		// Localytics Event
-		var LCLeventHeadData = {
-				dt: "h",
-				pa: msgTime - 1,
-				seq: 2,
-				u: uuid.v4(),
-				attrs: {
-					dt: "a",
-					au: env_var.localytics_key,
-					iu: lcl_sd_values.device_id,
-					lv: "slackalytics_0.0.1",
-					dmo: "Slack",
-					dll: "EN-US",
-					dma: "Slack"
-				},
-				ids: {
-					customer_name: user.name,
-					customer_id: user.id
-				}
-		};
-			
-		var LCLeventBodyData = {
-			ct: msgTime,
-			u: uuid.v4(),
-			su: lcl_sd_values.session_id,
-			mc: null,
-			mm: null,
-			ms: null,
-			dt: "e",
-			n: "message posted",
-			cid: user.id,
-			utp: "known",
-			attrs: {
-				user: user.name + " (" + user.id + ")",
-				channel: channel.name + " (" + channel.id + ")",
-				words: wordCount,
-				emojis: emojiCount,
-				exclamations: exclaCount,
-				ellipsis: elipseCount,
-				question_marks: questionMark,
-				domain: teamDomain+".slack.com"
-			}
-		};
-
-		// Localytics Session Close
-		var LCLcloseHeadData = {
-				dt: "h",
-				pa: msgTime - 1,
-				seq: 3,
-				u: uuid.v4(),
-				attrs: {
-					dt: "a",
-					au: env_var.localytics_key,
-					iu: lcl_sd_values.device_id,
-					lv: "slackalytics_0.0.1",
-					dmo: "Slack",
-					dll: "EN-US",
-					dma: "Slack"
-				},
-				ids: {
-					customer_name: user.name,
-					customer_id: user.id
-				}
-		};
-			
-		var LCLcloseBodyData = {
-				dt: "c",
-				u: uuid.v4(),
-				ss: msgTime,
-				su: lcl_sd_values.session_id,
-				ct: msgTime,
-				ctl: 0,
-				cta: 0,
-				fl:[],
-				cid: user.id,
-				utp: "known"
-		};
-
-		var localytics_url = {
-//		if (logger[debugLevel].toLowerCase() == "debug") {
-//				track: "https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data="
-//			} else {
-				track: "https://webanalytics.localytics.com/api/v2/applications/" + env_var.localytics_key + "/uploads/image.gif?e=1&client_date="+msgTime+"&callback=z&data="
-//			}
-		};
-
-		logger.log('info', "Localytics Session Start Data: \n Head: "+JSON.stringify(LCLstartHeadData)+"\n Body: "+JSON.stringify(LCLstartBodyData));
-		logger.log('info', "Localytics Event Data: \n Head: "+JSON.stringify(LCLeventHeadData)+"\n Body: "+JSON.stringify(LCLeventBodyData));
-		logger.log('info', "Localytics Session Close Data: \n Head: "+JSON.stringify(LCLcloseHeadData)+"\n Body: "+JSON.stringify(LCLcloseBodyData));
-		logger.log('debug', "Localytics Session Start Tracking Post Output: "+localytics_url.track + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)));
-		logger.log('debug', "Localytics Event Tracking Post Output: "+localytics_url.track + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)));
-		logger.log('debug', "Localytics Session Close Start Tracking Post Output: "+localytics_url.track + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)));
-
-		// Post Data
-		// Session Start
-		request.post(localytics_url.track + encodeURIComponent(JSON.stringify(LCLstartHeadData)+"%0A"+JSON.stringify(LCLstartBodyData)), function(error, resp, body) {
-				logger.log('debug','Localytics Tracking Start Response Debug: '+JSON.stringify(resp));
-				if(error) {
-					logger.log('error', 'Localytics Error: '+JSON.stringify(error));
-				}
-		});
-		// Event
-		request.post(localytics_url.track + encodeURIComponent(JSON.stringify(LCLeventHeadData)+"%0A"+JSON.stringify(LCLeventBodyData)), function(error, resp, body) {
-				logger.log('debug','Localytics Tracking Event Response Debug: '+JSON.stringify(resp));
-				if(error) {
-					logger.log('error', 'Localytics Error: '+JSON.stringify(error));
-				}
-		});
-		// Session Close
-		request.post(localytics_url.track + encodeURIComponent(JSON.stringify(LCLcloseHeadData)+"%0A"+JSON.stringify(LCLcloseBodyData)), function(error, resp, body) {
-				logger.log('debug','Localytics Tracking Close Response Debug: '+JSON.stringify(resp));
-				if(error) {
-					logger.log('error', 'Localytics Error: '+JSON.stringify(error));
-				}
-		});
-	} else {
-		logger.log('info', "Localytics application key not defined as environment variable");
-	}
-
 
 	// MIXPANEL COLLECT AND POST
 	if (env_var.mixpanel_token) {
@@ -381,61 +216,18 @@ app.post('/collect', function(req, res){
 				}
 		};
 
-		var engage_channel_info = {};
-		engage_channel_info[channel.name] = 1;
-		engage_channel_info["total_posts"] = 1;
-
-		var mixAddEngage = {
-			$distinct_id: user.id,
-			$time: msgTime,
-			$token: env_var.mixpanel_token,
-			$add: engage_channel_info
-		};
-
-		var mixSetEngage = {
-			$distinct_id: user.id,
-			$time: msgTime,
-			$token: env_var.mixpanel_token,
-			$set: {
-					last_post: moment.unix(msgTime).format('YYYY-MM-DDThh:mm:ss')
-			}		
-		};
-
-
 		var mixpanel_url = {
-//			if (logging["level"].toLowerCase() === "debug") {
-//				track: "https://api.mixpanel.com/track/?verbose=1&ip=0&data=",
-//				engage: "https://api.mixpanel.com/engage/?verbose=1&ip=0&data="
-//			} else {
-				track: "https://api.mixpanel.com/track/?ip=0&data=",
-				engage: "https://api.mixpanel.com/engage/?ip=0&data="			
-//			}
+				track: "https://api.mixpanel.com/track/?ip=0&data="
 		};
 
 		logger.log('info', "Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
-		logger.log('info', "Mixpanel Add Engage Data: "+JSON.stringify(mixAddEngage));
-		logger.log('info', "Mixpanel Set Engage Data: "+JSON.stringify(mixSetEngage));
 		logger.log('debug', "Mixpanel Tracking Post Output: "+mixpanel_url.track + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))));
-		logger.log('debug', "Mixpanel Add Engage Post Output: "+mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixAddEngage))));
-		logger.log('debug', "Mixpanel Set Engage Post Output: "+mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixSetEngage))));
 
 		// Post Data
 		request.post(mixpanel_url.track + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))), function(error, resp, body) {
 				logger.log('debug', 'Mixpanel Tracking Response Debug: '+JSON.stringify(resp));
 				if(error) {
 					logger.log('error','Mixpanel Error: '+JSON.stringify(error));
-				}
-		});
-		request.post(mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixAddEngage))), function(error, resp, body) {
-				logger.log('debug', 'Mixpanel Engage Response Debug: '+JSON.stringify(resp));
-				if(error) {
-					logger.log('error', 'Mixpanel Error: '+JSON.stringify(error));
-				}
-		});
-		request.post(mixpanel_url.engage + encodeURIComponent(base64.encode(JSON.stringify(mixSetEngage))), function(error, resp, body) {
-				logger.log('debug', 'Mixpanel Engage Response Debug: '+JSON.stringify(resp));
-				if(error) {
-					logger.log('error', 'Mixpanel Error: '+JSON.stringify(error));
 				}
 		});
 	} else {
@@ -445,6 +237,8 @@ app.post('/collect', function(req, res){
 
 // DEBUG LOGGING
 	logger.log('info', "Raw Slack Webhook Post: "+JSON.stringify(req.body));
+
+	res.send("OK")
 });
 
 //Start Server

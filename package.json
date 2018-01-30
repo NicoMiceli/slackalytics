@@ -1,7 +1,12 @@
 {
   "name": "SlackAlytics",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Integration with analytics tools to track Slack usage",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lisensee/slackalytics"
+  },
+  "license": "MIT",
   "main": "app.js",
   "dependencies": {
     "express": "^4.12.3",
