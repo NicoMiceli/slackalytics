@@ -65,6 +65,29 @@ base64.decode = function (encoded) {
 	return new Buffer(encoded || '', 'base64').toString('utf8');
 };
 
+function getDateTime() {
+    var date = new Date();
+
+    var hour = date.getHours();
+    hour = (hour < 10 ? "0" : "") + hour;
+
+    var min  = date.getMinutes();
+    min = (min < 10 ? "0" : "") + min;
+
+    var sec  = date.getSeconds();
+    sec = (sec < 10 ? "0" : "") + sec;
+
+    var year = date.getFullYear();
+
+    var month = date.getMonth() + 1;
+    month = (month < 10 ? "0" : "") + month;
+
+    var day  = date.getDate();
+    day = (day < 10 ? "0" : "") + day;
+
+    return year + "-" + month + "-" + day + "  " + hour + ":" + min + ":" + sec;
+};
+
 
 //Routes
 app.get('/', function(req, res){
@@ -73,6 +96,7 @@ app.get('/', function(req, res){
 
 app.get('/ping', function(req, res){
 	res.send('I\'m alive!');
+	res.send(getDateTime());
 });
 
 app.post('/collect', function(req, res){
