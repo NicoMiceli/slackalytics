@@ -10,7 +10,7 @@ var env_var = {
 	mongo_port: process.env.MONGO_PORT_PROD,
 	mongo_db: process.env.MONGO_DB_PROD,
 	ga_key: process.env.GOOGLE_ANALYTICS_PROD,
-	localytics_key: process.env.LOCALYTICS_PROD,
+//	localytics_key: process.env.LOCALYTICS_PROD,
 	mixpanel_token: process.env.MIXPANEL_PROD,
 	logentries_token: process.env.LOGENTRIES_PROD
 };
@@ -95,7 +95,7 @@ app.post('/collect', function(req, res){
 
 	function searchM(regex){
 		var searchStr = msgText.match(regex);
-		if(searchStr != null){
+		if(searchStr !== null){
 			return searchStr.length;
 		}
 		return 0;
@@ -103,17 +103,19 @@ app.post('/collect', function(req, res){
 
 	function searchS(regex){
 		var searchStr = msgText.split(regex);
-		if(searchStr != undefined){
+		if(searchStr !== undefined){
 			return searchStr.length;
 		}
 		return 0;
 	}
 
 	var wordCount = searchS(/\s+\b/);
-	var emojiCount = searchM(/:[a-z_0-9]*:/g);
+	var emojiCount = searchM(/:[a-z_0-9_-]*:/g);
 	var exclaCount = searchM(/!/g);
 	var questionMark = searchM(/\?/g);
-	var elipseCount = searchM(/\.\.\./g);
+	var elipsisCount = searchM(/\.\.\./g);
+	var alertCount = searchM(/<!/g);
+	var urlCount = searchM(/<http/g);
 
 
 	if (env_var.write_mongo) {
@@ -155,22 +157,26 @@ app.post('/collect', function(req, res){
 			cid: 	user.id,
 			uid: 	user.name,
 			ds:  	"slack",
+			ua:		"Slack 1.2.0",
 			cd1: 	user.name + " (" + user.id + ")",
 			cd2: 	channel.name + " (" + channel.id + ")",
 			cd3: 	msgText,
-			cm1: 	wordCount,
+			/*cm1: 	wordCount,
 			cm2: 	emojiCount,
 			cm3: 	exclaCount,
-			//cm4: 	letterCount,
-			cm5: 	elipseCount, 
-			cm6: 	questionMark,
+			cm4: 	letterCount,
+			cm5: 	elipsisCount, 
+			cm6: 	questionMark,*/
 			dh:		teamDomain+".slack.com",
 			dp:		"/"+channel.name,
 			dt:		"Slack Channel: "+channel.name,
 			t: 		"event",
 			ec: 	"slack: "+ channel.name + " | " + channel.id,
 			ea: 	"message posted",
-			el: 	msgText,
+			el: 	"posted by: "+ user.name + " (" + user.id + ")",
+			an:		"Slackalytics",
+			av:		"1.2.0",
+			ni:		1,
 			ev: 	1 
 		};
 
@@ -201,13 +207,13 @@ app.post('/collect', function(req, res){
 					$browser: "Slack",
 					$current_url: "https://"+teamDomain+".slack.com/" + channel.name,
 					mp_lib: "slack_nodeJS",
-					$lib_version: "Slack 0.0.1",
+					$lib_version: "Slack 1.2.0",
 					distinct_id: user.id,
-					num_words: wordCount,
+					/*num_words: wordCount,
 					num_emoji: emojiCount,
 					num_exclamation: exclaCount,
-					num_ellipsis: elipseCount,
-					num_questions: questionMark,
+					num_ellipsis: elipsisCount,
+					num_questions: questionMark,*/
 					message: msgText,
 					channel: channel.name + " (" + channel.id + ")",
 					user: user.name + " (" + user.id + ")",
