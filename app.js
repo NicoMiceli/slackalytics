@@ -96,7 +96,7 @@ app.get('/', function(req, res){
 
 app.get('/ping', function(req, res){
 	res.send('I\'m alive!');
-	res.send(getDateTime());
+	res.send(getDateTime(););
 });
 
 app.post('/collect', function(req, res){
