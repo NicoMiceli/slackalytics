@@ -78,8 +78,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/ping', function(req, res){
-	res.send('I\'m alive!');
-	res.send(DTformatted + ' UTC');
+	res.send('I\'m alive!' + "   Ping Time: " + DTformatted + ' UTC');
 });
 
 app.post('/collect', function(req, res){
