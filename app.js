@@ -280,9 +280,8 @@ app.post('/collect', function(req, res){
 		  name: channel.name + " (" + channel.id + ")"
 		});
 		} else {
-			logger.log('info', "SegmentIO token not defined as environment variable");
+			logger.log("info", "SegmentIO token not defined as environment variable");
 		}
-	}
 
 
 // DEBUG LOGGING
