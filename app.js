@@ -39,7 +39,7 @@ var app = express();
 var port = process.env.PORT || 3000;
 
 //SegmentIO
-var analytics = new Analytics(env_var.segmentio_prod);
+var analytics = new Analytics(env_var.segmentio_key);
 
 //Logentries Service
 var le = new logentries({
@@ -252,7 +252,7 @@ app.post('/collect', function(req, res){
 	}
 
 	// SEGMENTIO COLLECT AND POST
-	if (env_var.segmentio_prod) {
+	if (env_var.segmentio_key) {
 		analytics.identify({
 		  userId: user.id,
 		  traits: {
