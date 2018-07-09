@@ -10,8 +10,8 @@ var env_var = {
 	mongo_port: process.env.MONGO_PORT_PROD,
 	mongo_db: process.env.MONGO_DB_PROD,
 	ga_key: process.env.GOOGLE_ANALYTICS_PROD,
-//	localytics_key: process.env.LOCALYTICS_PROD,
 	mixpanel_token: process.env.MIXPANEL_PROD,
+	segmentio_key: process.env.SEGMENTIO_PROD,
 	logentries_token: process.env.LOGENTRIES_PROD
 };
 
@@ -25,6 +25,7 @@ var math = require('mathjs');
 var moment = require('moment');
 var uuid = require('node-uuid');
 var mongodb = require('mongodb');
+var Analytics = require('analytics-node');
 var logentries = require('le_node');
 var dateTime = require('node-datetime');
 
@@ -36,6 +37,9 @@ var DTformatted = dt.format('Y-m-d H:M:S');
 //Server Details
 var app = express();
 var port = process.env.PORT || 3000;
+
+//SegmentIO
+var analytics = new Analytics(env_var.segmentio_prod);
 
 //Logentries Service
 var le = new logentries({
@@ -246,6 +250,40 @@ app.post('/collect', function(req, res){
 		logger.log('info', "Mixpanel token not defined as environment variable");
 	}
 	}
+
+	// SEGMENTIO COLLECT AND POST
+	if (env_var.segmentio_prod) {
+		analytics.identify({
+		  userId: user.id,
+		  traits: {
+			username: user.name
+		  }
+		});
+
+		analytics.track({
+		  userId: user.id,
+		  event: 'message posted',
+		  properties: {
+			message: msgText,
+			channel: channel.name + " (" + channel.id + ")",
+			user: user.name + " (" + user.id + ")",
+			time: msgTime,
+			os: "Slack",
+			browser: "Slack",
+			current_url: "https://"+teamDomain+".slack.com/" + channel.name,
+			lib_version: "Slack 1.2.0"
+		  }
+		});
+
+		analytics.screen({
+		  userId: user.id,
+		  name: channel.name + " (" + channel.id + ")"
+		});
+		} else {
+			logger.log('info', "SegmentIO token not defined as environment variable");
+		}
+	}
+
 
 // DEBUG LOGGING
 	logger.log('info', "Raw Slack Webhook Post: "+JSON.stringify(req.body));
