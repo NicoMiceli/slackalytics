@@ -10,12 +10,11 @@ var env_var = {
 	mongo_port: process.env.MONGO_PORT_PROD,
 	mongo_db: process.env.MONGO_DB_PROD,
 	ga_key: process.env.GOOGLE_ANALYTICS_PROD,
-	mixpanel_token: process.env.MIXPANEL_PROD,
+	mixpanel_key: process.env.MIXPANEL_PROD,
 	segmentio_key: process.env.SEGMENTIO_PROD,
-	logentries_token: process.env.LOGENTRIES_PROD
+	logentries_key: process.env.LOGENTRIES_PROD
 };
 
-		
 //Set up Reqs
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -28,7 +27,6 @@ var mongodb = require('mongodb');
 var Analytics = require('analytics-node');
 var logentries = require('le_node');
 var dateTime = require('node-datetime');
-
 
 //Date Time
 var dt = dateTime.create();
@@ -43,7 +41,7 @@ var analytics = new Analytics(env_var.segmentio_key);
 
 //Logentries Service
 var le = new logentries({
-	token: env_var.logentries_token
+	token: env_var.logentries_key
 });
 
 //Logger
@@ -70,11 +68,9 @@ var base64 = exports;
 base64.encode = function (unencoded) {
 	return new Buffer(unencoded || '').toString('base64');
 };
-
 base64.decode = function (encoded) {
 	return new Buffer(encoded || '', 'base64').toString('utf8');
 };
-
 
 //Routes
 app.get('/', function(req, res){
@@ -99,7 +95,9 @@ app.post('/collect', function(req, res){
 
 	var teamDomain = req.body.team_domain;
 
-	var msgTime = math.round(req.body.timestamp, 0); //in epoch
+	var msgTime = math.round(req.body.timestamp, 0); //in epoch by day
+	
+	var msgSeconds = req.body.timestamp.replace(/./g,''); //in epoch by millisecond
 	
 	var msgText = req.body.text;
 
@@ -133,24 +131,17 @@ app.post('/collect', function(req, res){
 	var collection_name = "posts";
 	
 	mongodb.MongoClient.connect(url, function (err, db) {
-		if (err) {
-			logger.log('error', 'Mongo Error: Unable to connect to the server. Error: ' + JSON.stringify(err));
-		} else {
-			logger.log('debug','Mongo: Connection established to '+url);
+		if (err) {logger.log('error', 'Mongo Error: Unable to connect to the server. Error: ' + JSON.stringify(err));}
+		else {logger.log('debug','Mongo: Connection established to '+url);
     		var collection = db.collection(collection_name);
 
 			// Insert post contents
 			collection.insert(req.body, function (err, result) {
-				if (err) {
-					logger.log('error', 'Mongo Error: '+JSON.stringify(err));
-				} else {
-					logger.log('debug', 'Mongo: '+result.length+' inserted documents into the '+collection_name+' collection. The documents inserted with "_id" are: '+JSON.stringify(result));
-				}
+				if (err) {logger.log('error', 'Mongo Error: '+JSON.stringify(err));}
+				else {logger.log('debug', 'Mongo: '+result.length+' inserted documents into the '+collection_name+' collection. The documents inserted with "_id" are: '+JSON.stringify(result));	}
 			//Close connection
 			db.close(function (err) {
-				if (err) {
-					logger.log('error','Mongo Error: '+JSON.stringify(err));
-					}
+				if (err) {logger.log('error','Mongo Error: '+JSON.stringify(err));}
 			});
 			});
   		}
@@ -190,26 +181,20 @@ app.post('/collect', function(req, res){
 			ev: 	1 
 		};
 
-		var google_url = {
-				track: "https://www.google-analytics.com/collect?"
-		};
+		var google_url = {track: "https://www.google-analytics.com/collect?"};
 
 		logger.log('debug', "Google Analytics Data: "+JSON.stringify(GAdata));
 		logger.log('debug', "Google Analytics Tracking Post Output: "+google_url.track + qs.stringify(GAdata));
 
 		// Post Data
 		request.post(google_url.track + qs.stringify(GAdata), function(error, resp, body) {
-				if(error) {
-					logger.log('error', 'Google Analytics Error: '+JSON.stringify(error));
-				}
-				logger.log('debug', 'Google Analytics Tracking Response Debug: '+JSON.stringify(resp));
+				if(error) {logger.log('error', 'Google Analytics Error: '+JSON.stringify(error));} 
+				else {logger.log('debug', 'Google Analytics Tracking Response Debug: '+JSON.stringify(resp));}
 		});
-	} else {
-		logger.log('info',"Google Analytics account ID not defined as environment variable");
-	}
+	} else {logger.log('error',"Google Analytics account ID not defined as environment variable");}
 
 	// MIXPANEL COLLECT AND POST
-	if (env_var.mixpanel_token) {
+	if (env_var.mixpanel_key) {
 		var mixTrack = {
 			event:	"message posted",
 			properties:	{
@@ -228,28 +213,22 @@ app.post('/collect', function(req, res){
 					channel: channel.name + " (" + channel.id + ")",
 					user: user.name + " (" + user.id + ")",
 					time: msgTime,
-					token: env_var.mixpanel_token
+					seconds: msgSeconds,
+					token: env_var.mixpanel_key
 				}
 		};
 
-		var mixpanel_url = {
-				track: "https://api.mixpanel.com/track/?ip=0&data="
-		};
+		var mixpanel_url = {track: "https://api.mixpanel.com/track/?ip=0&data="};
 
-		logger.log('info', "Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
+		logger.log('debug', "Mixpanel Tracking Data: "+JSON.stringify(mixTrack));
 		logger.log('debug', "Mixpanel Tracking Post Output: "+mixpanel_url.track + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))));
 
 		// Post Data
 		request.post(mixpanel_url.track + encodeURIComponent(base64.encode(JSON.stringify(mixTrack))), function(error, resp, body) {
-				logger.log('debug', 'Mixpanel Tracking Response Debug: '+JSON.stringify(resp));
-				if(error) {
-					logger.log('error','Mixpanel Error: '+JSON.stringify(error));
-				}
+				if(error) {logger.log('error','Mixpanel Error: '+JSON.stringify(error));}
+				else {logger.log('debug', 'Mixpanel Tracking Response Debug: '+JSON.stringify(resp));}
 		});
-	} else {
-		logger.log('info', "Mixpanel token not defined as environment variable");
-	}
-	}
+	} else {logger.log('error', "Mixpanel account ID not defined as environment variable");}
 
 	// SEGMENTIO COLLECT AND POST
 	if (env_var.segmentio_key) {
@@ -268,6 +247,7 @@ app.post('/collect', function(req, res){
 			channel: channel.name + " (" + channel.id + ")",
 			user: user.name + " (" + user.id + ")",
 			time: msgTime,
+			seconds: msgSeconds,
 			os: "Slack",
 			browser: "Slack",
 			current_url: "https://"+teamDomain+".slack.com/" + channel.name,
@@ -279,10 +259,8 @@ app.post('/collect', function(req, res){
 		  userId: user.id,
 		  name: channel.name + " (" + channel.id + ")"
 		});
-		} else {
-			logger.log("info", "SegmentIO token not defined as environment variable");
-		}
-
+		} else {	logger.log("error", "SegmentIO token not defined as environment variable");}
+	}
 
 // DEBUG LOGGING
 	logger.log('info', "Raw Slack Webhook Post: "+JSON.stringify(req.body));
@@ -291,6 +269,4 @@ app.post('/collect', function(req, res){
 });
 
 //Start Server
-app.listen(port, function () {
-	logger.log('info', 'Listening on port ' + port); 
-});
+app.listen(port, function () {logger.log('info', 'Listening on port ' + port);});
