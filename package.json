@@ -18,8 +18,7 @@
     "node-uuid": "^1.4.0",
     "mongodb": "~2.0",
     "le_node": "~1.1",
-    "analytics-node": "^3.0.0",
-    "node-datetime": "^2.0.0"
+    "analytics-node": "^3.0.0"
   },
   "scripts": {
     "start": "node app.js"

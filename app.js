@@ -26,11 +26,6 @@ var uuid = require('node-uuid');
 var mongodb = require('mongodb');
 var Analytics = require('analytics-node');
 var logentries = require('le_node');
-var dateTime = require('node-datetime');
-
-//Date Time
-var dt = dateTime.create();
-var DTformatted = dt.format('Y-m-d H:M:S');
 
 //Server Details
 var app = express();
@@ -78,7 +73,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/ping', function(req, res){
-	res.send('I\'m alive!' + "   Ping Time: " + new Date().toISOString());
+	res.send('I\'m alive!' + "   Ping Time: " + new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''));
 });
 
 app.post('/collect', function(req, res){
