@@ -78,7 +78,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/ping', function(req, res){
-	res.send('I\'m alive!' + "   Ping Time: " + dt);
+	res.send('I\'m alive!' + "   Ping Time: " + new Date().toISOString());
 });
 
 app.post('/collect', function(req, res){
