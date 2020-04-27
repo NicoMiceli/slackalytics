@@ -61,10 +61,10 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 //Simple Base64 handler
 var base64 = exports;
 base64.encode = function (unencoded) {
-	return new Buffer(unencoded || '').toString('base64');
+	return new Buffer.from(unencoded || '').toString('base64');
 };
 base64.decode = function (encoded) {
-	return new Buffer(encoded || '', 'base64').toString('utf8');
+	return new Buffer.from(encoded || '', 'base64').toString('utf8');
 };
 
 //Routes
