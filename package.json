@@ -16,7 +16,7 @@
     "mathjs": "~3.17.0",
     "moment": "^2.4.0",
     "node-uuid": "^1.4.0",
-    "mongodb": "^3.5",
+    "mongodb": "~2.0",
     "le_node": "~1.1",
     "analytics-node": "^3.0.0"
   },
