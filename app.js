@@ -122,27 +122,46 @@ app.post('/collect', function(req, res){
 
 
 	if (env_var.write_mongo) {
-	var url = "mongodb+srv://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_server+":"+env_var.mongo_port+"/"+env_var.mongo_db;
-	var collection_name = "posts";
+	// var url = "mongodb+srv://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_server+"/"+env_var.mongo_db+"?retryWrites=true&w=majority";
+	// var collection_name = "posts";
 	
-	mongodb.MongoClient.connect(url, function (err, db) {
-		if (err) {logger.log('error', 'Mongo Error: Unable to connect to the server. Error: ' + JSON.stringify(err));}
-		else {logger.log('debug','Mongo: Connection established to '+url);
-    		var collection = db.collection(collection_name);
+	const MongoClient = require('mongodb').MongoClient;
+	const uri = "mongodb+srv://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_server+"/"+env_var.mongo_db+"?retryWrites=true&w=majority";
+	const client = new MongoClient(uri, { useNewUrlParser: true });
+	client.connect(err => {
+		const collection = client.db(env_var.mongo_db).collection(collection_name);
+				if (err) {logger.log('error', 'Mongo Error: Unable to connect to the server. Error: ' + JSON.stringify(err));}
+				else {logger.log('debug','Mongo: Connection established to '+url);
+					collection.insert(req.body, function (err, result) {
+						if (err) {logger.log('error', 'Mongo Error: '+JSON.stringify(err));}
+						else {logger.log('debug', 'Mongo: '+result.length+' inserted documents into the '+collection_name+' collection. The documents inserted with "_id" are: '+JSON.stringify(result));}
+					  	client.close(function (err) {
+							if (err) {logger.log('error','Mongo Error: '+JSON.stringify(err));}
+						});
+					});
+});
+	};
+});	
+}
 
-			// Insert post contents
-			collection.insert(req.body, function (err, result) {
-				if (err) {logger.log('error', 'Mongo Error: '+JSON.stringify(err));}
-				else {logger.log('debug', 'Mongo: '+result.length+' inserted documents into the '+collection_name+' collection. The documents inserted with "_id" are: '+JSON.stringify(result));	}
-			//Close connection
-			db.close(function (err) {
-				if (err) {logger.log('error','Mongo Error: '+JSON.stringify(err));}
-			});
-			});
-  		}
-		}
-	);
-	}
+//	mongodb.MongoClient.connect(url, function (err, db) {
+//		if (err) {logger.log('error', 'Mongo Error: Unable to connect to the server. Error: ' + JSON.stringify(err));}
+//		else {logger.log('debug','Mongo: Connection established to '+url);
+//    		var collection = db.collection(collection_name);
+//
+//			// Insert post contents
+//			collection.insert(req.body, function (err, result) {
+//				if (err) {logger.log('error', 'Mongo Error: '+JSON.stringify(err));}
+//				else {logger.log('debug', 'Mongo: '+result.length+' inserted documents into the '+collection_name+' collection. The documents inserted with "_id" are: '+JSON.stringify(result));	}
+//			//Close connection
+//			db.close(function (err) {
+//				if (err) {logger.log('error','Mongo Error: '+JSON.stringify(err));}
+//			});
+//			});
+//		}
+//		}
+//	);
+//	}
 
 	if (env_var.analytics_track) {
 	// GOOGLE ANALYTICS COLLECT AND POST
