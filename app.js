@@ -130,8 +130,8 @@ app.post('/collect', function(req, res){
 
 
 	if (env_var.write_mongo) {
-//	var url = "mongodb://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_shard_1+":"+env_var.mongo_shard_1_port+","+env_var.mongo_shard_2+":"+env_var.mongo_shard_2_port+","+env_var.mongo_shard_3+":"+env_var.mongo_shard_3_port+"/"+env_var.mongo_cluster_db+"?"+env_var.mongo_shard_query;
-	var url = "mongodb://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_server+":"+env_var.mongo_port+"/"+env_var.mongo_db;
+	var url = "mongodb://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_shard_1+":"+env_var.mongo_shard_1_port+","+env_var.mongo_shard_2+":"+env_var.mongo_shard_2_port+","+env_var.mongo_shard_3+":"+env_var.mongo_shard_3_port+"/"+env_var.mongo_cluster_db+"?"+env_var.mongo_shard_query;
+//	var url = "mongodb://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_server+":"+env_var.mongo_port+"/"+env_var.mongo_db;
 	var collection_name = "posts";
 	
 	mongodb.MongoClient.connect(url, function (err, db) {
