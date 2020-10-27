@@ -57,7 +57,9 @@ logger.log = function(level, message) {
 			message = JSON.stringify(message);
 		}
 		console.log(level+': '+message);
-		le.log(level, message);
+        if (level === 'error') { le.log('err', message); }
+        else if (level === 'warn') { le.log('warning', message); }
+		else { le.log(level, message); }
 		}
 };
 
