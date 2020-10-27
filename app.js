@@ -136,26 +136,24 @@ app.post('/collect', function(req, res){
 //	var url = "mongodb://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_server+":"+env_var.mongo_port+"/"+env_var.mongo_db;
     var url = "mongodb+srv://"+env_var.mongo_user+":"+encodeURIComponent(env_var.mongo_password)+"@measurechat.rz4ev.mongodb.net/"+env_var.mongo_cluster_db+"?retryWrites=true&w=majority";
 	var collection_name = "posts";
-      
-    var client = new mongodb.MongoClient(url, { useNewUrlParser: true });
 	
-	client.connect(function(err) {
-		if (err) {logger.log('error', 'Mongo Error: Unable to connect to the server. Error: ' + JSON.stringify(err));}
-		else {logger.log('debug','Mongo: Connection established to '+url);
-    		var collection = client.db(env_var.mongo_cluster_db).collection(collection_name);
+	mongodb.MongoClient.connect(url, function(err, client) {
+      if (err) {logger.log('error', 'Mongo Error: Unable to connect to the server. Error: ' + JSON.stringify(err));}
+      else {
+        logger.log('debug','Mongo: Connection established to '+url);
+        var collection = client.db(env_var.mongo_cluster_db).collection(collection_name);
 
-			// Insert post contents
-			collection.insert(req.body, function (err, result) {
-				if (err) {logger.log('error', 'Mongo Error: '+JSON.stringify(err));}
-				else {logger.log('debug', 'Mongo: '+result.length+' inserted documents into the '+collection_name+' collection. The documents inserted with "_id" are: '+JSON.stringify(result));	}
-			//Close connection
-			db.close(function (err) {
-				if (err) {logger.log('error','Mongo Error: '+JSON.stringify(err));}
-			});
-			});
-  		}
-		}
-	);
+        // Insert post contents
+        collection.insertOne(req.body, function (err, result) {
+          if (err) {logger.log('error', 'Mongo Error: '+JSON.stringify(err));}
+          else {logger.log('debug', 'Mongo: '+result.length+' inserted documents into the '+collection_name+' collection. The documents inserted with "_id" are: '+JSON.stringify(result));	}
+          //Close connection
+          db.close(function (err) {
+            if (err) {logger.log('error','Mongo Error: '+JSON.stringify(err));}
+          });
+        });
+      }
+    });
 	}
 
 	if (env_var.analytics_track) {
