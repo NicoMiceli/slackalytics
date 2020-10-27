@@ -132,14 +132,17 @@ app.post('/collect', function(req, res){
 
 
 	if (env_var.write_mongo) {
-	var url = "mongodb://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_shard_1+":"+env_var.mongo_shard_1_port+","+env_var.mongo_shard_2+":"+env_var.mongo_shard_2_port+","+env_var.mongo_shard_3+":"+env_var.mongo_shard_3_port+"/"+env_var.mongo_cluster_db+"?"+env_var.mongo_shard_query;
+//	var url = "mongodb://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_shard_1+":"+env_var.mongo_shard_1_port+","+env_var.mongo_shard_2+":"+env_var.mongo_shard_2_port+","+env_var.mongo_shard_3+":"+env_var.mongo_shard_3_port+"/"+env_var.mongo_cluster_db+"?"+env_var.mongo_shard_query;
 //	var url = "mongodb://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_server+":"+env_var.mongo_port+"/"+env_var.mongo_db;
+    var url = "mongodb+srv://"+env_var.mongo_user+":"+encodeURIComponent(env_var.mongo_password)+"@measurechat.rz4ev.mongodb.net/"+env_var.mongo_cluster_db+"?retryWrites=true&w=majority";
 	var collection_name = "posts";
+      
+    var client = new mongodb.MongoClient(url, { useNewUrlParser: true });
 	
-	mongodb.MongoClient.connect(url, function (err, db) {
+	client.connect(function(err) {
 		if (err) {logger.log('error', 'Mongo Error: Unable to connect to the server. Error: ' + JSON.stringify(err));}
 		else {logger.log('debug','Mongo: Connection established to '+url);
-    		var collection = db.collection(collection_name);
+    		var collection = client.db(env_var.mongo_cluster_db).collection(collection_name);
 
 			// Insert post contents
 			collection.insert(req.body, function (err, result) {

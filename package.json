@@ -9,16 +9,16 @@
   "license": "MIT",
   "main": "app.js",
   "dependencies": {
-    "express": "^4.12.3",
+    "analytics-node": "^3.0.0",
     "body-parser": "^1.12.2",
-    "request": "^2.54.0",
-    "querystring": "^0.2.0",
+    "express": "^4.12.3",
+    "le_node": "~1.1",
     "mathjs": "~3.17.0",
     "moment": "^2.4.0",
+    "mongodb": "^3.6.2",
     "node-uuid": "^1.4.0",
-    "mongodb": "~>3.1.13",
-    "le_node": "~1.1",
-    "analytics-node": "^3.0.0"
+    "querystring": "^0.2.0",
+    "request": "^2.54.0"
   },
   "scripts": {
     "start": "node app.js"
