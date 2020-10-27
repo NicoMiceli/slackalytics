@@ -141,7 +141,8 @@ app.post('/collect', function(req, res){
       if (err) {logger.log('error', 'Mongo Error: Unable to connect to the server. Error: ' + JSON.stringify(err));}
       else {
         logger.log('debug','Mongo: Connection established to '+url);
-        var collection = client.db(env_var.mongo_cluster_db).collection(collection_name);
+        var db = client.db(env_var.mongo_cluster_db);
+        var collection = db.collection(collection_name);
 
         // Insert post contents
         collection.insertOne(req.body, function (err, result) {
