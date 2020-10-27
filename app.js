@@ -149,7 +149,7 @@ app.post('/collect', function(req, res){
           if (err) {logger.log('error', 'Mongo Error: '+JSON.stringify(err));}
           else {logger.log('debug', 'Mongo: '+result.length+' inserted documents into the '+collection_name+' collection. The documents inserted with "_id" are: '+JSON.stringify(result));	}
           //Close connection
-          db.close(function (err) {
+          client.close(function (err) {
             if (err) {logger.log('error','Mongo Error: '+JSON.stringify(err));}
           });
         });
