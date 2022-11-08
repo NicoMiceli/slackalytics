@@ -17,10 +17,10 @@ var env_var = {
 	mongo_shard_3: process.env.MONGO_SHARD_THREE,
 	mongo_shard_3_port: process.env.MONGO_SHARD_THREE_PORT,
 	mongo_shard_query: process.env.MONGO_QUERY,
+	mongo_cluster_server: process.env.MONGO_CLUSTER_SERVER,
 	ga_key: process.env.GOOGLE_ANALYTICS_PROD,
 	mixpanel_key: process.env.MIXPANEL_PROD,
-	segmentio_key: process.env.SEGMENTIO_PROD,
-	logentries_key: process.env.LOGENTRIES_PROD
+	segmentio_key: process.env.SEGMENTIO_PROD
 };
 
 //Set up Reqs
@@ -33,7 +33,6 @@ var moment = require('moment');
 var uuid = require('node-uuid');
 var mongodb = require('mongodb');
 var Analytics = require('analytics-node');
-var logentries = require('le_node');
 
 //Server Details
 var app = express();
@@ -41,11 +40,6 @@ var port = process.env.PORT || 3000;
 
 //SegmentIO
 var analytics = new Analytics(env_var.segmentio_key);
-
-//Logentries Service
-var le = new logentries({
-	token: env_var.logentries_key
-});
 
 //Logger
 var logger = exports;
@@ -57,9 +51,6 @@ logger.log = function(level, message) {
 			message = JSON.stringify(message);
 		}
 		console.log(level+': '+message);
-        if (level === 'error') { le.log('err', message); }
-        else if (level === 'warn') { le.log('warning', message); }
-		else { le.log(level, message); }
 		}
 };
 
@@ -134,7 +125,7 @@ app.post('/collect', function(req, res){
 	if (env_var.write_mongo) {
 //	var url = "mongodb://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_shard_1+":"+env_var.mongo_shard_1_port+","+env_var.mongo_shard_2+":"+env_var.mongo_shard_2_port+","+env_var.mongo_shard_3+":"+env_var.mongo_shard_3_port+"/"+env_var.mongo_cluster_db+"?"+env_var.mongo_shard_query;
 //	var url = "mongodb://"+env_var.mongo_user+":"+env_var.mongo_password+"@"+env_var.mongo_server+":"+env_var.mongo_port+"/"+env_var.mongo_db;
-    var url = "mongodb+srv://"+env_var.mongo_user+":"+encodeURIComponent(env_var.mongo_password)+"@measurechat.rz4ev.mongodb.net/"+env_var.mongo_cluster_db+"?retryWrites=true&w=majority";
+    var url = "mongodb+srv://"+env_var.mongo_user+":"+encodeURIComponent(env_var.mongo_password)+"@"+env_var.mongo_cluster_server+"/"+env_var.mongo_cluster_db+"?retryWrites=true&w=majority";
 	var collection_name = "posts";
 	
 	mongodb.MongoClient.connect(url, function(err, client) {
